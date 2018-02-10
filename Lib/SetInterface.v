@@ -607,7 +607,7 @@ Module MkSet_Theory (S:SET).
   apply eq_refl.
   apply subset_refl.
  Qed.
- 	 
+         
  Add Morphism diff 
   with signature eq ==> eq ==> eq
   as diff_morphism.
@@ -1306,12 +1306,15 @@ Module MkListSet (X:EQDEC) <: SET.
  Proof.
   intros.
   assert (W:=elements_correct _ _ H0).
-  rewrite InA_spec in W; destruct W as (y,(W1,W2)).
-  unfold filter, elements in W2; rewrite filter_In in W2.
-  destruct W2; rewrite (H _ _ W1); split; trivial.
-  apply elements_complete.
-  rewrite InA_spec.
-  exists y; auto.
+  - rewrite InA_spec in W.
+    + destruct W as [y [W1 W2]].
+    unfold filter, elements in W2; rewrite filter_In in W2.
+    destruct W2; rewrite (H _ _ W1); split; trivial.
+    apply elements_complete.
+    rewrite InA_spec.
+    exists y; auto.
+    apply ET.eq_dec.
+    + apply ET.eq_dec.
  Qed.
 
  Lemma filter_complete : forall (f:E.t -> bool) x s, 
@@ -1320,12 +1323,16 @@ Module MkListSet (X:EQDEC) <: SET.
  Proof.
   intros.
   assert (W:=elements_correct _ _ H0).
-  rewrite InA_spec in W; destruct W as (y, (W1,W2)).
-  assert (In y s /\ f y).
-  rewrite <- (H _ _ W1); auto.
-  unfold filter, is_true in H2; rewrite <- filter_In in H2.
-  apply elements_complete.
-  rewrite InA_spec; exists y; auto.
+  {
+    rewrite InA_spec in W. destruct W as (y, (W1,W2)).
+    assert (In y s /\ f y).
+    rewrite <- (H _ _ W1); auto.
+    unfold filter, is_true in H2; rewrite <- filter_In in H2.
+    apply elements_complete.
+    rewrite InA_spec. exists y; auto.
+    apply ET.eq_dec.
+    apply ET.eq_dec.
+  }
  Qed.
 
  Lemma forallb_correct : forall f, (forall x y, X.eq x y -> f x = f y) ->

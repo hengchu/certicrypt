@@ -1,4 +1,6 @@
 -R ALEA/ ALEA
+-R Semantics/ Semantics
+-R Lib/ Lib
 ALEA/Ccpo.v
 ALEA/Choice.v
 ALEA/Cover.v
@@ -9,3 +11,49 @@ ALEA/Prog.v
 ALEA/Sets.v
 ALEA/Uprop.v
 ALEA/Utheory.v
+Semantics/Adversary.v
+Semantics/Alloc.v
+Semantics/App_HL.v
+Semantics/BaseDef.v
+Semantics/BaseProp.v
+Semantics/Bitstrings.v
+Semantics/BuildGame.v
+Semantics/BuildTac.v
+Semantics/BuildTac2.v
+Semantics/Dlist.v
+Semantics/EasyCrypt.v
+Semantics/eLift.v
+Semantics/EqObsRelDec.v
+Semantics/EqTh.v
+Semantics/EqThInv.v
+Semantics/Expressions.v
+Semantics/Fundamental.v
+Semantics/GenOpt.v
+Semantics/Group.v
+Semantics/Inlining.v
+Semantics/Instructions.v
+Semantics/LazySampling.v
+Semantics/LazySampling2.v
+Semantics/le_lift.v
+Semantics/MakeSem.v
+Semantics/Memory.v
+Semantics/NotModifyDec.v
+Semantics/Operators.v
+Semantics/PPT.v
+Semantics/PrBad.v
+Semantics/SD.v
+Semantics/SD_Hoare.v
+Semantics/SD_Others.v
+Semantics/SemInstr.v
+Semantics/SemTheory.v
+Semantics/Triples.v
+Semantics/Types.v
+Semantics/Variables.v
+Lib/BoolEquality.v
+Lib/CCMisc.v
+Lib/FilterMap.v
+Lib/LtIrrelevance.v
+Lib/PrimeLib.v
+Lib/SetInterface.v
+Lib/Tree.v
+Lib/While_loop.v

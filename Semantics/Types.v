@@ -262,13 +262,17 @@ Lemma log_inf_monotonic : forall (p q:positive), (p <= q)%positive ->
 Proof.
  unfold Ple; induction p; destruct q; simpl; intros; auto using le_n_S with arith.
  apply le_n_S; apply IHp; intro; apply H.
- case_eq ((p ?= q)%positive Gt); intros; trivial.
- destruct (Pcompare_not_Eq p q).
- elim (H2 H1).
- apply Pcompare_Gt_Lt in H1; rewrite H1 in H0; trivial.
- elim H; trivial.
+ case_eq ((p ?= q)%positive); intros;
+ repeat match goal with
+        | [ H1 : (?p ?= ?q)%positive = ?ord1,
+            H2 : (?p ?= ?q)%positive = ?ord2 |- _
+          ] => rewrite H1 in H2; discriminate H2
+        end; trivial.
+ Search (_~1 ?= _~0)%positive.
+ rewrite Pos.compare_xI_xO. rewrite H0; reflexivity.
+ elim H; trivial; intuition.
  apply le_n_S; apply IHp; intro; apply H.
- rewrite <- Pcompare_eq_Gt; trivial.
+ rewrite Pos.compare_xO_xI. rewrite H0; reflexivity.
  elim H; trivial.
 Qed.
 

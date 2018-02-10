@@ -20,6 +20,7 @@ Require Export NArith.
 Require Export Ndec.
 Require Export ZArith.
 Require Export Arith.
+Require Export Coq.NArith.Nnat.
 
 Open Scope nat_scope.
 
@@ -421,7 +422,7 @@ Fixpoint pow (n m:nat) {struct m} : nat :=
 Infix "^" := pow : nat_scope.
 
 Definition pow_N (n m:N) : N :=
- Nnat.N_of_nat (pow (Nnat.nat_of_N n) (Nnat.nat_of_N m)). 
+ N.of_nat (pow (N.to_nat n) (N.to_nat m)). 
 
 Lemma pow_lt_0 : forall n c, 0 < n -> 0 < n ^ c.
 Proof.

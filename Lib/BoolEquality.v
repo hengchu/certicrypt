@@ -455,7 +455,7 @@ End MkEqDec_Theory.
 (** Type equipped with a boolean function that decides Leibniz equality *)
 Module Type EQBOOL_LEIBNIZ.
 
-  Parameter t : Type.
+  Parameter t : Set.
   Parameter eqb : t -> t -> bool.
 
   Parameter eqb_spec : forall x y, if eqb x y then x = y else x <> y.

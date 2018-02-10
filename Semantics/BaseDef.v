@@ -25,7 +25,8 @@ Declare Module Univ : Universe.
 
 Module CP := CoverFun Univ.
 
-Export Univ CP RP PP MP UP.
+Include Univ.
+Export CP RP PP MP UP.
 
 Close Scope nat_scope.
 Open Scope U_scope.
@@ -1540,10 +1541,12 @@ Qed.
 Add Parametric Relation A : (A -> Prop) (Fimp (A:=A))
  reflexivity proved by (@Fimp_refl A)
  transitivity proved by (@Fimp_trans A)
- as Fimp_rel.
+   as Fimp_rel.
+
+Search impl.
 
 Add Parametric Morphism A : (range (A:=A))
- with signature Fimp (A:=A) --> Oeq (O:=Distr A) ==> inverse impl 
+ with signature Fimp (A:=A) --> Oeq (O:=Distr A) ==> Basics.flip impl 
  as range_morph2.
 Proof.
  unfold Basics.flip, impl, Fimp; intros P Q H d1 d2 H0 H1.
@@ -1670,9 +1673,7 @@ Proof.
  rewrite (mu_cte d2 (f n)), H0; trivial.
  change (mu d1 (fcte _ (mu d2 (fun b => f b))) == mu d2 f).
  rewrite (mu_cte d1), H, Umult_one_right; trivial.
- apply mu_stable_eq; trivial.
- refine (ford_eq_intro _); trivial.
- unfold prodP; apply range_True.
+ apply range_True.
 Qed.
 
 Lemma lift_mu : forall (A B:Type) (R:A -> B -> Prop) (d1:Distr A) (d2:Distr B) d,
@@ -1776,7 +1777,7 @@ Qed.
 
 Add Parametric Morphism A B : (lift (A:=A) (B:=B))
  with signature Fimp2 (A:=A) (B:=B) --> 
-  Oeq (O:=Distr (A * B)) ==> Oeq (O:=Distr A) ==> Oeq (O:=Distr B) ==> inverse impl
+  Oeq (O:=Distr (A * B)) ==> Oeq (O:=Distr A) ==> Oeq (O:=Distr B) ==> Basics.flip impl
  as lift_morph.
 Proof.
  unfold impl, Fimp2; intros R1 R2 H d1 d2 H0 d3 d4 H1 d5 d6 H2 H3.
@@ -2064,7 +2065,7 @@ Section DISCRETE.
 
  Definition bij_n_nxn k :=
   match @bij_n_nxn_aux (S k) (lt_O_Sn k) with
-  | existT i (exist j _) => (i, j)
+  | existT _ i (exist _ j _) => (i, j)
   end.
 
  Lemma mult_eq_reg_l : forall n m p, 
