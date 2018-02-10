@@ -6,7 +6,9 @@ Set Implicit Arguments.
 Module Rules (Univ:Universe).
 Module PP := (Proba Univ).
 (* begin hide *)
-Import Univ PP MP UP.
+Include Univ.
+Import PP.
+Import MP UP.
 Open Local Scope U_scope.
 Open Local Scope O_scope.
 (* end hide *)
@@ -528,7 +530,7 @@ Qed.
 Hint Resolve ifok.
 
 Lemma Mif_eq : forall (A:Type)(b:(Distr bool))(f1 f2:Distr A)(q:MF A),
-	mu (Mif b f1 f2) q == (mu f1 q) * (mu b ctrue) + (mu f2 q) * (mu b cfalse).
+        mu (Mif b f1 f2) q == (mu f1 q) * (mu b ctrue) + (mu f2 q) * (mu b cfalse).
 intros.
 apply Oeq_trans with (mu b (fplus (fmult (mu f1 q) ctrue) (fmult (mu f2 q) cfalse))).
 intros; unfold Mif,Mlet,star; simpl.
@@ -928,15 +930,12 @@ Hint Resolve Imu_monotonic Imu_stable_eq.
 Lemma Imu_singl : forall (A:Type) (e:Distr A) (f:A->U),
            Ieq (Imu e (fun x => singl (f x))) (singl (mu e f)).
 unfold Ieq,Imu,singl; simpl; intuition.
-apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
-apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
 Qed.
 
 Lemma Imu_inf : forall (A:Type) (e:Distr A) (f:A->U),
            Ieq (Imu e (fun x => inf (f x))) (inf (mu e f)).
 unfold Ieq,Imu,inf; simpl; intuition.
 exact (mu_zero e).
-apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
 Qed.
 
 Lemma Imu_sup : forall (A:Type) (e:Distr A) (f:A->U),

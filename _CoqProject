@@ -1,0 +1,11 @@
+-R ALEA/ ALEA
+ALEA/Ccpo.v
+ALEA/Choice.v
+ALEA/Cover.v
+ALEA/Misc.v
+ALEA/Monads.v
+ALEA/Probas.v
+ALEA/Prog.v
+ALEA/Sets.v
+ALEA/Uprop.v
+ALEA/Utheory.v
