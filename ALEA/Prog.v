@@ -21,7 +21,7 @@ Lemma Mif_mon : forall (A:Type) (b1 b2:Distr bool) (m1 m2 n1 n2: Distr A),
 intros; unfold Mif.
 apply Mlet_le_compat ; auto.
 intro x; destruct x; auto.
-Save.
+Qed.
 
 Definition MIf : forall (A:Type), Distr bool -m> Distr A -m> Distr A -m> Distr A.
 intro A; exists (fun b => le_compat2_mon (fun m1 m2 n1 n2 (H1:m1 <= m2) (H2:n1<=n2) =>
@@ -43,7 +43,7 @@ Defined.
 Lemma pchoice_simpl : forall A p (m1 m2:M A) f,
       pchoice p m1 m2 f = p * m1 f + [1-]p * m2 f.
 trivial.
-Save.
+Qed.
 
 Definition Mchoice (A:Type) (p:U) (m1 m2: Distr A) : Distr A.
 intros A p m1 m2; exists (pchoice p (mu m1) (mu m2)).
@@ -78,13 +78,13 @@ Defined.
 Lemma Mchoice_simpl : forall A p (m1 m2:Distr A) f,
       mu (Mchoice p m1 m2) f = p * mu m1 f + [1-]p * mu m2 f.
 trivial.
-Save.
+Qed.
 
 Lemma Mchoice_mon : forall (A:Type) (p:U) (m1 m2 n1 n2: Distr A),
         m1<=m2 -> n1<=n2 -> Mchoice p m1 n1 <= Mchoice p m2 n2.
 simpl; intros.
 apply Uplus_le_compat; repeat Usimpl; auto.
-Save.
+Qed.
 
 
 Add Parametric Morphism (A:Type) :  (Mchoice (A:=A))
@@ -92,7 +92,7 @@ Add Parametric Morphism (A:Type) :  (Mchoice (A:=A))
 as Mchoice_eq_compat.
 intros; apply eq_distr_intro; simpl; intros.
 rewrite H; apply Uplus_eq_compat; repeat Usimpl; auto.
-Save.
+Qed.
 Hint Immediate  Mchoice_eq_compat.
 
 Definition MChoice A (p:U) : Distr A -m> Distr A -m> Distr A :=
@@ -101,20 +101,20 @@ Definition MChoice A (p:U) : Distr A -m> Distr A -m> Distr A :=
 Lemma MChoice_simpl : forall A (p:U) (m1 m2 : Distr A),
 MChoice A p m1 m2 = Mchoice p m1 m2.
 trivial.
-Save.
+Qed.
 
 Lemma Mchoice_sym_le : forall (A:Type) (p:U) (m1 m2: Distr A),
             Mchoice p m1 m2 <= Mchoice ([1-]p) m2 m1.
 simpl; intros.
 rewrite Uplus_sym; repeat Usimpl; auto.
-Save.
+Qed.
 Hint Resolve Mchoice_sym_le.
 
 Lemma Mchoice_sym : forall (A:Type) (p:U) (m1 m2: Distr A),
             Mchoice p m1 m2 == Mchoice ([1-]p) m2 m1.
 intros; apply Ole_antisym; auto.
 apply Ole_trans with (Mchoice ([1-][1-]p) m1 m2); auto.
-Save.
+Qed.
 
 Lemma Mchoice_continuous_right
     : forall (A:Type) (p:U) (m: Distr A), continuous (D1:=cDistr A) (D2:=cDistr A) (MChoice A p m).
@@ -125,7 +125,7 @@ simpl mu at 2.
 rewrite lub_fun_eq.
 rewrite <- (lub_eq_mult ([1-]p) ((Mu A @ h) <_> f)).
 rewrite <- lub_eq_plus_cte_left; auto.
-Save.
+Qed.
 Hint Resolve Mchoice_continuous_right.
 
 Lemma Mchoice_continuous_left : forall (A:Type) (p:U),
@@ -137,7 +137,7 @@ apply Ole_trans with (lub (c:=cDistr A) ((MChoice A ([1-] p) m)@h)).
 apply (Mchoice_continuous_right ([1-]p) m h).
 rewrite fmon_lub_simpl.
 apply lub_le_compat; intros; intro f; simpl; auto.
-Save.
+Qed.
 
 (*
 Lemma Mchoice_continuous_left
@@ -149,7 +149,7 @@ rewrite Mchoice_sym.
 apply Ole_trans with (lub (c:=cDistr A) ((MChoice A ([1-] p) m)@h)).
 apply (Mchoice_continuous_right ([1-]p) m h).
 apply lub_le_compat; intros; intro f; simpl; auto.
-Save.
+Qed.
 *)
 
 Lemma Mchoice_continuous :
@@ -157,7 +157,7 @@ forall (A:Type) (p:U), continuous2 (D1:=cDistr A) (D2:=cDistr A) (D3:=cDistr A) 
 intros; apply continuous_continuous2; intros.
 apply (Mchoice_continuous_right (A:=A) p).
 apply (Mchoice_continuous_left (A:=A) p).
-Save.
+Qed.
 
 (** ** Image distribution *)
 
@@ -167,7 +167,7 @@ Definition im_distr (A B : Type) (f:A->B) (m:Distr A) : Distr B :=
 Lemma im_distr_simpl : forall A B (f:A->B) (m:Distr A)(h:B->U),
      mu (im_distr f m)  h == mu m (fun a => h (f a)).
 trivial.
-Save.
+Qed.
 
 Add Parametric Morphism (A B : Type) : (im_distr (A:=A) (B:=B)) with signature
        (feq (A:=A) (B:=B)) ==> (Oeq (O:=Distr A)) ==> (Oeq (O:=Distr B))
@@ -175,18 +175,18 @@ as im_distr_eq_compat.
 intros; apply eq_distr_intro; intro h; simpl.
 apply (mu_eq_morphism (A:=A)); trivial.
 apply ford_eq_intro; intro n; rewrite (H n); auto.
-Save.
+Qed.
 
 Lemma im_distr_comp : forall A B C (f:A->B) (g:B->C) (m:Distr A),
             im_distr g (im_distr f m) == im_distr (fun a => g (f a)) m.
 intros; apply eq_distr_intro; simpl; auto.
-Save.
+Qed.
 
 Lemma im_distr_id : forall A (f:A->A) (m:Distr A), (forall x, f x = x) ->
             im_distr f m == m.
 intros; apply eq_distr_intro; simpl; intros.
 apply (mu_stable_eq m); simpl; apply ford_eq_intro; intro x; rewrite H; auto.
-Save.
+Qed.
 
 (** ** Product distribution *)
 
@@ -197,14 +197,14 @@ Add Parametric Morphism (A B : Type) : (prod_distr (A:=A) (B:=B))
 with signature (Ole (o:=Distr A)) ++> (Ole (o:=Distr B)) ++> (Ole (o:=Distr (A*B)))
 as prod_distr_le_compat.
 intros; unfold prod_distr; auto.
-Save.
+Qed.
 Hint Resolve prod_distr_le_compat.
 
 Add Parametric Morphism (A B : Type) : (prod_distr (A:=A) (B:=B))
 with signature (Oeq (O:=Distr A)) ==> (Oeq (O:=Distr B)) ==> (Oeq (O:=Distr (A*B)))
 as prod_distr_eq_compat.
 intros; apply Ole_antisym; auto.
-Save.
+Qed.
 Hint Immediate prod_distr_eq_compat.
 
 Definition Prod_distr (A B :Type): Distr A -m> Distr B -m> Distr (A*B).
@@ -214,7 +214,7 @@ Defined.
 Lemma Prod_distr_simpl : forall (A B:Type)(d1: Distr A) (d2:Distr B),
      Prod_distr A B d1 d2 = prod_distr d1 d2.
 trivial.
-Save.
+Qed.
 
 Lemma prod_distr_rect : forall  (A B : Type) (d1: Distr A) (d2:Distr B) (f:A->U)(g:B->U),
          mu (prod_distr d1 d2) (fun xy => f (fst xy) * g (snd xy)) == mu d1 f * mu d2 g.
@@ -224,35 +224,35 @@ apply (mu_stable_eq d1).
 simpl; apply ford_eq_intro; intro x.
 rewrite (mu_stable_mult d2 (f x) g); auto.
 rewrite (mu_stable_mult d1 (mu d2 g) f); auto.
-Save.
+Qed.
 
 Lemma prod_distr_fst : forall  (A B : Type) (d1: Distr A) (d2:Distr B) (f:A->U),
              mu (prod_distr d1 d2) (fun xy => f (fst xy)) == mu d2 (fone B) * mu d1 f.
 intros; rewrite Umult_sym; rewrite <- prod_distr_rect.
 apply (mu_stable_eq (prod_distr d1 d2)).
 simpl; apply ford_eq_intro; unfold UP.fone; auto.
-Save.
+Qed.
 
 Lemma prod_distr_snd : forall  (A B : Type) (d1: Distr A) (d2:Distr B) (g:B->U),
              mu (prod_distr d1 d2) (fun xy => g (snd xy)) == mu d1 (fone A) * mu d2 g.
 intros; rewrite <- prod_distr_rect.
 apply (mu_stable_eq (prod_distr d1 d2)).
 simpl; apply ford_eq_intro; unfold UP.fone; auto.
-Save.
+Qed.
 
 Lemma prod_distr_fst_eq : forall  (A B : Type) (d1: Distr A) (d2:Distr B),
 mu d2 (fone B) == 1 -> im_distr (fst (A:=A) (B:=B)) (prod_distr d1 d2) == d1.
 intros; apply eq_distr_intro; intro g.
 rewrite im_distr_simpl.
 rewrite prod_distr_fst; auto.
-Save.
+Qed.
 
 Lemma prod_distr_snd_eq : forall  (A B : Type) (d1: Distr A) (d2:Distr B),
 mu d1 (fone A) == 1 -> im_distr (snd (A:=A) (B:=B)) (prod_distr d1 d2) == d2.
 intros; apply eq_distr_intro; intro g.
 rewrite im_distr_simpl.
 rewrite prod_distr_snd; auto.
-Save.
+Qed.
 
 Definition swap A B (x:A*B) : B * A := (snd x,fst x).
 
@@ -265,7 +265,7 @@ Defined.
 
 Lemma Arg_swap_simpl : forall A B f, Arg_swap A B f = arg_swap f.
 trivial.
-Save.
+Qed.
 
 Definition prod_distr_com A B (d1: Distr A) (d2:Distr B) (f : MF (A * B)) :=
       mu (prod_distr d1 d2) f == mu (prod_distr d2 d1) (arg_swap f).
@@ -277,7 +277,7 @@ apply mu_stable_eq; auto.
 apply Oeq_trans with (mu (prod_distr d2 d1) (arg_swap f)); auto.
 apply mu_stable_eq; unfold arg_swap,swap; simpl; apply ford_eq_intro; intro z.
 apply (ford_eq_elim H (snd z,fst z)).
-Save.
+Qed.
 
 Lemma prod_distr_com_rect : forall (A B : Type) (d1: Distr A) (d2:Distr B) (f:A->U)(g:B->U),
          prod_distr_com d1 d2 (fun xy => f (fst xy) * g (snd xy)).
@@ -286,19 +286,19 @@ rewrite prod_distr_rect.
 apply Oeq_trans with (mu (prod_distr d2 d1) (fun yx => g (fst yx) * f (snd yx))).
 rewrite prod_distr_rect; auto.
 apply mu_stable_eq; simpl; apply ford_eq_intro; intro yx; unfold arg_swap; simpl; auto.
-Save.
+Qed.
 
 Lemma prod_distr_com_cte : forall (A B : Type) (d1: Distr A) (d2:Distr B) (c:U),
          prod_distr_com d1 d2 (fcte (A*B) c).
 intros; apply prod_distr_com_eq_compat with (fun z => fcte A c (fst z) * fone B (snd z)).
 simpl; auto.
 apply prod_distr_com_rect.
-Save.
+Qed.
 
 Lemma prod_distr_com_one : forall (A B : Type) (d1: Distr A) (d2:Distr B),
          prod_distr_com d1 d2 (fone (A*B)).
 intros; exact (prod_distr_com_cte d1 d2 1).
-Save.
+Qed.
 
 Lemma prod_distr_com_plus : forall (A B : Type) (d1: Distr A) (d2:Distr B) (f g:MF (A*B)),
          fplusok f g ->
@@ -309,7 +309,7 @@ rewrite (mu_stable_plus (prod_distr d1 d2) (f:=f) (g:=g) H).
 rewrite H0; rewrite H1.
 rewrite <- (mu_stable_plus (prod_distr d2 d1) (f:=arg_swap f) (g:=arg_swap g)); auto.
 red; unfold arg_swap,swap,finv; simpl; intro z; apply (H (snd z,fst z)).
-Save.
+Qed.
 
 Lemma prod_distr_com_mult : forall (A B : Type) (d1: Distr A) (d2:Distr B) (k:U)(f:MF (A*B)),
          prod_distr_com d1 d2 f -> prod_distr_com d1 d2 (fmult k f).
@@ -317,7 +317,7 @@ unfold prod_distr_com; intros.
 rewrite (mu_stable_mult (prod_distr d1 d2) k f).
 rewrite H.
 rewrite <- (mu_stable_mult (prod_distr d2 d1) k (arg_swap f)); auto.
-Save.
+Qed.
 
 Lemma prod_distr_com_inv : forall (A B : Type) (d1: Distr A) (d2:Distr B) (f:MF (A*B)),
          prod_distr_com d1 d2 f -> prod_distr_com d1 d2 (finv f).
@@ -327,7 +327,7 @@ rewrite H.
 assert (H1:=prod_distr_com_one d1 d2); red in H1.
 rewrite H1.
 rewrite <- (mu_inv_minus (prod_distr d2 d1) (arg_swap f)); auto.
-Save.
+Qed.
 
 Lemma prod_distr_com_lub : forall (A B : Type) (d1: Distr A) (d2:Distr B) (f:natO-m>MF (A*B)),
          (forall n, prod_distr_com d1 d2 (f n)) -> prod_distr_com d1 d2 (lub f).
@@ -338,13 +338,13 @@ apply lub_eq_compat; apply fmon_eq_intro; intro n.
 repeat rewrite fmon_comp_simpl.
 rewrite H; auto.
 rewrite <- lub_comp_eq; auto.
-Save.
+Qed.
 
 Lemma prod_distr_com_refl : forall A B (d1:distr A) (d2:distr B) (f:MF (A*B)),
      prod_distr_com d1 d2 f -> prod_distr_com d2 d1 (arg_swap f).
 red; intros.
 apply Oeq_sym; apply Oeq_trans with (mu (prod_distr d1 d2) f); auto.
-Save.
+Qed.
 
 
 Lemma discrete_commute : forall A B (d1:distr A) (d2:distr B) (f:MF (A*B)),
@@ -362,7 +362,7 @@ intros; apply wretract_le with cf; auto.
 apply (mu_stable_eq d2); simpl; apply ford_eq_intro; intro x.
 apply Oeq_trans with (mu (Discrete (Build_discr cfr pt)) (fun x0 : A => f (x0, x))); auto.
 apply Oeq_sym; auto.
-Save.
+Qed.
 
 Definition fst_distr A B (m : Distr (A*B)) : Distr A := im_distr (fst (B:=B)) m.
 Definition snd_distr A B (m : Distr (A*B)) : Distr B := im_distr (snd (B:=B)) m.
@@ -381,13 +381,13 @@ Lemma range_le : forall A (P:A->Prop)  (d:Distr A), range P d ->
    apply Oeq_le; apply Oeq_sym; apply H; intros.
    rewrite Uminus_le_zero; auto.
    apply Uminus_zero_le; apply Ule_zero_eq; exact H1.
-  Save.
+  Qed.
 
 Lemma range_eq : forall A (P:A->Prop)  (d:Distr A), range P d ->
        forall f g, (forall a, P a -> f a == g a) -> mu d f == mu d g.
      red; intros; apply Ole_antisym; apply (range_le (P:=P)); intros; auto.
      apply Oeq_le; apply Oeq_sym; auto.
-Save.
+Qed.
 
 
 (** * Prog.v: Axiomatic semantics *)
@@ -411,7 +411,7 @@ Lemma ok_le_compat : forall (A:Type) (p p':U) (e:Distr A) (q q':A-o>U),
 unfold ok; intros.
 apply Ole_trans with p; auto.
 apply Ole_trans with (mu e q); auto.
-Save.
+Qed.
 
 Lemma ok_eq_compat : forall (A:Type) (p p':U) (e e':Distr A) (q q':A-o>U),
     p' == p ->  q == q' -> e == e' -> ok p e q -> ok p' e' q'.
@@ -419,34 +419,34 @@ unfold ok; intros.
 apply Ole_trans with p; auto.
 apply Ole_trans with (mu e q); auto.
 apply Ole_trans with (mu e' q); auto.
-Save.
+Qed.
 
 Lemma okfun_le_compat :
 forall (A B:Type) (p p':A -o> U) (e:A -o> Distr B) (q q':A-o>B-o>U),
     p' <= p -> q <= q' -> okfun p e q -> okfun p' e q'.
 unfold okfun; intros.
 apply ok_le_compat with (p x) (q x); auto.
-Save.
+Qed.
 
 Lemma ok_mult : forall (A:Type)(k p:U)(e:Distr A)(f : A -o> U),
                            ok p e f -> ok (k*p) e (fmult k f).
 unfold ok; intros A k p e f oka.
 rewrite (mu_stable_mult e k f).
 apply Umult_le_compat_right; trivial.
-Save.
+Qed.
 
 Lemma ok_inv :   forall (A:Type)(p:U)(e:Distr A)(f : A -> U),
              ok p e f -> mu e (finv f) <= [1-]p.
 unfold ok; intros A p e f oka.
 apply Ole_trans with ([1-](mu e f)); auto.
-Save.
+Qed.
 
 Lemma okup_le_compat : forall (A:Type) (p p':U) (e:Distr A) (q q':A-o>U),
     p <= p' -> q' <= q -> okup p e q -> okup p' e q'.
 unfold okup; intros.
 apply Ole_trans with p; auto.
 apply Ole_trans with (mu e q); auto.
-Save.
+Qed.
 
 Lemma okup_eq_compat : forall (A:Type) (p p':U) (e e':Distr A) (q q':A-o>U),
     p == p' ->  q == q' -> e == e' -> okup p e q -> okup p' e' q'.
@@ -454,20 +454,20 @@ unfold okup; intros.
 apply Ole_trans with p; auto.
 apply Ole_trans with (mu e q); auto.
 apply Ole_trans with (mu e' q); auto.
-Save.
+Qed.
 
 Lemma upfun_le_compat : forall (A B:Type) (p p':A -o> U) (e:A -o> Distr B)
     (q q':A-o>B-o>U),
     p <= p' -> q'<=q -> upfun p e q -> upfun p' e q'.
 unfold upfun; intros.
 apply okup_le_compat with (p x) (q x); auto.
-Save.
+Qed.
 
 Lemma okup_mult : forall (A:Type)(k p:U)(e:Distr A)(f : A -o> U), okup p e f -> okup (k*p) e (fmult k f).
 unfold okup; intros A k p e f oka.
 rewrite (mu_stable_mult e k f).
 apply Umult_le_compat_right; trivial.
-Save.
+Qed.
 
 
 (** ** Basic rules *)
@@ -479,24 +479,24 @@ Lemma apply_rule : forall (A B:Type)(a:(Distr A))(f:A->Distr B)(r:U)(p:A->U)(q:B
     ok r a p -> okfun p f (fun x => q) -> ok r (Mlet a f) q.
 unfold ok,okfun,Mlet; simpl; intros.
 apply Ole_trans with (mu a p); auto.
-Save.
+Qed.
 
 Lemma okup_apply_rule : forall (A B:Type)(a:Distr A)(f:A->Distr B)(r:U)(p:A->U)(q:B->U),
     okup r a p -> upfun p f (fun x => q) -> okup r (Mlet a f) q.
 unfold okup,upfun,Mlet; simpl; intros.
 apply Ole_trans with (mu a p); auto.
-Save.
+Qed.
 
 (** *** Rules for abstraction *)
 Lemma lambda_rule : forall (A B:Type)(f:A->Distr B)(p:A->U)(q:A -> B->U),
    (forall x:A, ok (p x) (f x) (q x)) -> okfun p f q.
 trivial.
-Save.
+Qed.
 
 Lemma okup_lambda_rule : forall (A B:Type)(f:A->Distr B)(p:A->U)(q:A -> B->U),
    (forall x:A, okup (p x) (f x) (q x)) -> upfun p f q.
 trivial.
-Save.
+Qed.
 
 (** *** Rule for conditional
   $ \bfrac{\ok{p_1}{e_1}{q}~~~\ok{p_2}{e_2}{q}}
@@ -512,19 +512,19 @@ Lemma combiok : forall (A:Type) p q (f1 f2 : A -> U), p <= [1-]q -> fplusok (fmu
 unfold fplusok, fmult, finv; intros; intro x.
 apply Ole_trans with p; auto.
 apply Ole_trans with ([1-]q); auto.
-Save.
+Qed.
 Hint Resolve combiok.
 
 Lemma fmult_fplusok : forall (A:Type) p q (f1 f2 : A -> U), fplusok f1 f2 -> fplusok (fmult p f1) (fmult q f2).
 unfold fplusok, fmult, finv; intros; intro x.
 apply Ole_trans with (f1 x); auto.
 apply Ole_trans with ([1-]f2 x); auto.
-Save.
+Qed.
 Hint Resolve fmult_fplusok.
 
 Lemma ifok : forall f1 f2, fplusok (fmult f1 ctrue) (fmult f2 cfalse).
 intros; apply fmult_fplusok; unfold fplusok,ctrue,cfalse,finv; intro x; case x; auto.
-Save.
+Qed.
 Hint Resolve ifok.
 
 Lemma Mif_eq : forall (A:Type)(b:(Distr bool))(f1 f2:Distr A)(q:MF A),
@@ -545,7 +545,7 @@ rewrite (mu_stable_plus b (f:=(fmult (mu f1 q) ctrue))
                 (ifok (mu f1 q) (mu f2 q))).
 rewrite (mu_stable_mult b (mu f1 q) ctrue).
 rewrite (mu_stable_mult b (mu f2 q) cfalse); trivial.
-Save.
+Qed.
 
 Lemma ifrule :
   forall (A:Type)(b:(Distr bool))(f1 f2:Distr A)(p1 p2:U)(q:A->U),
@@ -556,7 +556,7 @@ rewrite (Mif_eq b f1 f2 q).
 apply Uplus_le_compat.
 apply Umult_le_compat_left; auto.
 apply Umult_le_compat_left; auto.
-Save.
+Qed.
 
 Lemma okup_ifrule :
   forall (A:Type)(b:(Distr bool))(f1 f2:Distr A)(p1 p2:U)(q:A->U),
@@ -567,7 +567,7 @@ rewrite (Mif_eq b f1 f2 q).
 apply Uplus_le_compat.
 apply Umult_le_compat_left; auto.
 apply Umult_le_compat_left; auto.
-Save.
+Qed.
 
 
 (** *** Rule for fixpoints
@@ -600,7 +600,7 @@ apply Ulub_le; auto.
 intro n; apply Ole_trans with (mu (Miter F n x) (q x)).
 apply (H n).
 apply Mfix_le_iter; auto.
-Save.
+Qed.
 
 Lemma fixrule : forall (p : A -> natO -m> U),
    (forall x:A, p x O == 0)->
@@ -610,7 +610,7 @@ Lemma fixrule : forall (p : A -> natO -m> U),
 red; red; intros.
 rewrite <- Ulub_lub.
 apply (fixrule_Ulub p H H0 x).
-Save.
+Qed.
 
 
 Lemma fixrule_up_Ulub : forall (p : A -> natO -> U),
@@ -623,7 +623,7 @@ apply Ole_trans with (Ulub ((Mu B @ (Miter F <o> x)) <_> q x)); auto.
 apply Ulub_le_compat.
 intro n; generalize x; induction n; simpl; intros; auto.
 apply (H n (Miter F n) IHn x0).
-Save.
+Qed.
 
 Lemma fixrule_up_lub : forall (p : A -> natO -m> U),
    (forall (i:nat) (f:A->Distr B),
@@ -632,7 +632,7 @@ Lemma fixrule_up_lub : forall (p : A -> natO -m> U),
 red; red; intros.
 rewrite <- Ulub_lub.
 apply (fixrule_up_Ulub p H x).
-Save.
+Qed.
 
 Lemma okup_fixrule_glb :
    forall p : A -> natO -m> UI,
@@ -649,7 +649,7 @@ red; intros.
 unfold Mfix, fixp; simpl.
 apply lub_glb_le; auto.
 intro n; exact (H n x).
-Save.
+Qed.
 End Ruleseq.
 
 Lemma okup_fixrule_inv : forall  (p : A -> U) (q : A -> B -> U),
@@ -659,7 +659,7 @@ unfold upfun, okup; intros.
 unfold Mfix; simpl.
 apply lub_le.
 intro n; generalize x; induction n; simpl; auto.
-Save.
+Qed.
 
 
 (*
@@ -682,7 +682,7 @@ apply lub_le; auto.
 intro n; apply Ole_trans with (mu (iter F n x) q).
 apply (H0 n).
 apply Mfix_le_iter; auto.
-Save.
+Qed.
 End Ruleinv.
 *)
 
@@ -699,7 +699,7 @@ Definition admissible (P:(A -O-> cDistr B) -> Prop) := P 0 /\ forall f, P f -> P
 
 Lemma admissible_true : admissible (fun f => True).
 red; auto.
-Save.
+Qed.
 
 Lemma admissible_le_fix :
   continuous (D1:=A-O-> cDistr B) (D2:=A-O->cDistr B) F -> admissible (fun f => f <= Mfix F).
@@ -708,11 +708,11 @@ auto.
 apply Ole_trans with (F (Mfix F)).
 auto.
 intro x; rewrite Mfix_eq; auto.
-Save.
+Qed.
 
 Lemma muF_stable : stable muF.
 auto.
-Save.
+Qed.
 
 Definition mu_muF_commute_le  :=
   forall f x,  f <= Mfix F ->  mu (F f x) (q x) <= muF (fun y => mu (f y) (q y)) x.
@@ -730,14 +730,14 @@ apply F_muF_le.
 unfold Mfix,fixp; intros.
 apply le_lub.
 apply (fmonotonic muF); auto.
-Save.
+Qed.
 Hint Resolve mu_mufix_le.
 
 Lemma muF_le : forall f, muF f <= f
       ->  forall x, mu (Mfix F x) (q x) <= f x.
 intros; apply Ole_trans with (mufix muF x); auto.
 apply mufix_inv; auto.
-Save.
+Qed.
 
 Hypothesis muF_F_le :
     forall f x, f <= Mfix F ->  muF (fun y => mu (f y) (q y)) x <= mu (F f x) (q x).
@@ -751,7 +751,7 @@ apply (fmonotonic muF); auto.
 apply muF_F_le.
 intro y; unfold Mfix,fixp; simpl; intros f.
 apply le_lub with (c:=U) (f:=(Mu B @ (Ccpo.iter (D:=A -O-> cDistr B) F <o> y)) <_> f) (n:=n).
-Save.
+Qed.
 
 End F_muF_results.
 Hint Resolve mu_mufix_le mufix_mu_le.
@@ -762,7 +762,7 @@ Lemma mufix_mu :
 intros; apply Ole_antisym; auto.
 apply mufix_mu_le; intros; auto.
 rewrite (H f x0); auto.
-Save.
+Qed.
 Hint Resolve mufix_mu.
 End Fix_muF.
 
@@ -787,7 +787,7 @@ apply (ford_eq_elim (A:=A)).
 red; apply muF_stable; auto.
 simpl; apply ford_eq_intro; intro; auto.
 apply (mufix_mu (fun (x:A) => fone B) muFone F_muF_eq_one n).
-Save.
+Qed.
 Hint Resolve muF_pterm.
 End Fix_Term.
 
@@ -809,7 +809,7 @@ apply Uinv_le_perm_right.
 apply muF_le with (muF:=muFqinv) (q:=qinv) (f:=finv f) (x:=x); auto.
 unfold pterm; replace (qinv x) with (finv (q x)); auto.
 apply mu_monotonic; intro; unfold fesp,fone; repeat Usimpl; auto.
-Save.
+Qed.
 
 Lemma muF_le_term_minus :
 forall f, f <= pterm -> muFqinv (fminus pterm f) <= fminus pterm f ->
@@ -822,7 +822,7 @@ apply (fmonotonic muFqinv); unfold fminus, finv; intro y.
 apply Uinv_le_perm_left; auto.
 apply Ole_trans with (fminus pterm f); auto.
 unfold fminus, Uminus, finv; intro y; auto.
-Save.
+Qed.
 
 Variable muFq : MF A -m> MF A.
 
@@ -835,7 +835,7 @@ apply muF_le with (muF:=muFq); auto.
 apply Ole_trans with (f x & pterm x).
 rewrite H1; auto.
 apply muF_le_term; auto.
-Save.
+Qed.
 
 End Fix_muF_Term.
 End TransformFix.
@@ -856,7 +856,7 @@ Defined.
 Lemma Loop_eq :
     forall f x, Loop f x = mu (stop x) (fun b => if b then a else mu (step x) f).
 trivial.
-Save.
+Qed.
 
 Definition loop := mufix Loop.
 
@@ -871,7 +871,7 @@ unfold okfun,ok in *|-*.
 intro x; apply Ole_trans with (2:=H f x).
 rewrite Loop_eq; apply (mu_monotonic (stop x)); intros.
 intro b; case b; auto.
-Save.
+Qed.
 
 Definition up_loop : MF A := nufix Loop.
 
@@ -886,7 +886,7 @@ red; apply Ole_trans with (1:=H f x).
 rewrite Loop_eq.
 apply (mu_monotonic (stop x)); intro x0.
 case x0; auto.
-Save.
+Qed.
 
 End LoopRule.
 
@@ -903,26 +903,26 @@ Defined.
 Lemma low_Imu : forall (A:Type) (e:Distr A) (F: A -> IU),
              low (Imu e F) = mu e (fun x => low (F x)).
 trivial.
-Save.
+Qed.
 
 Lemma up_Imu : forall (A:Type) (e:Distr A) (F: A -> IU),
              up (Imu e F) = mu e (fun x => up (F x)).
 trivial.
-Save.
+Qed.
 
 Lemma Imu_monotonic : forall (A:Type) (e:Distr A) (F G : A -> IU),
             (forall x, Iincl (F x) (G x)) -> Iincl (Imu e F) (Imu e G).
 unfold Iincl,Imu; simpl; intuition.
 apply (mu_monotonic e); intro x; case (H x); auto.
 apply (mu_monotonic e); intro x; case (H x); auto.
-Save.
+Qed.
 
 Lemma Imu_stable_eq : forall (A:Type) (e:Distr A) (F G : A -> IU),
             (forall x, Ieq (F x) (G x)) -> Ieq (Imu e F) (Imu e G).
 unfold Ieq,Imu; simpl; intuition.
 apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; case (H x); auto.
 apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; case (H x); auto.
-Save.
+Qed.
 Hint Resolve Imu_monotonic Imu_stable_eq.
 
 Lemma Imu_singl : forall (A:Type) (e:Distr A) (f:A->U),
@@ -930,19 +930,19 @@ Lemma Imu_singl : forall (A:Type) (e:Distr A) (f:A->U),
 unfold Ieq,Imu,singl; simpl; intuition.
 apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
 apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
-Save.
+Qed.
 
 Lemma Imu_inf : forall (A:Type) (e:Distr A) (f:A->U),
            Ieq (Imu e (fun x => inf (f x))) (inf (mu e f)).
 unfold Ieq,Imu,inf; simpl; intuition.
 exact (mu_zero e).
 apply (mu_stable_eq e); simpl; apply ford_eq_intro; intro x; auto.
-Save.
+Qed.
 
 Lemma Imu_sup : forall (A:Type) (e:Distr A) (f:A->U),
            Iincl (Imu e (fun x => sup (f x))) (sup (mu e f)).
 unfold Iincl,Imu,inf; simpl; intuition.
-Save.
+Qed.
 
 Lemma Iin_mu_Imu :
    forall (A:Type) (e:Distr A) (F:A->IU) (f:A->U),
@@ -950,7 +950,7 @@ Lemma Iin_mu_Imu :
 unfold Iin,Imu; simpl; split.
 apply (mu_monotonic e); intro x; case (H x); auto.
 apply (mu_monotonic e); intro x; case (H x); auto.
-Save.
+Qed.
 Hint Resolve Iin_mu_Imu.
 
 Definition Iok (A:Type) (I:IU) (e:Distr A) (F:A->IU) := Iincl (Imu e F) I.
@@ -961,7 +961,7 @@ Lemma Iin_mu_Iok :
    forall (A:Type) (I:IU) (e:Distr A) (F:A->IU) (f:A->U),
            (forall x, Iin (f x) (F x)) -> Iok I e F -> Iin (mu e f) I.
 intros; apply Iincl_in with (Imu e F); auto.
-Save.
+Qed.
 
 
 (** *** Stability *)
@@ -969,18 +969,18 @@ Lemma Iok_le_compat : forall (A:Type) (I J:IU) (e:Distr A) (F G:A->IU),
    Iincl I J -> (forall x, Iincl (G x) (F x)) -> Iok I e F -> Iok J e G.
 unfold Iok; intros; apply Iincl_trans with I; auto.
 apply Iincl_trans with (Imu e F); auto.
-Save.
+Qed.
 
 Lemma Iokfun_le_compat : forall (A B:Type) (I J:A->IU) (e:A->Distr B) (F G:A->B->IU),
    (forall x, Iincl (I x) (J x)) -> (forall x y, Iincl (G x y) (F x y)) -> Iokfun I e F -> Iokfun J e G.
 unfold Iokfun; intros; apply Iok_le_compat with (I x) (F x); auto.
-Save.
+Qed.
 
 (** *** Rule for values *)
 
 Lemma Iunit_eq : forall (A: Type) (a:A) (F:A->IU), Ieq (Imu (Munit a) F) (F a).
 intros; unfold Ieq,Imu,Munit; simpl; auto.
-Save.
+Qed.
 
 
 (** *** Rule for application *)
@@ -988,7 +988,7 @@ Save.
 Lemma Ilet_eq : forall (A B : Type) (a:Distr A) (f:A->Distr B)(I:IU)(G:B->IU),
    Ieq (Imu (Mlet a f) G) (Imu a (fun x => Imu (f x) G)).
 unfold Ieq,Imu,Mlet,Iincl; simpl; intuition.
-Save.
+Qed.
 Hint Resolve Ilet_eq.
 
 Lemma Iapply_rule : forall (A B : Type) (a:Distr A) (f:A->Distr B)(I:IU)(F:A->IU)(G:B->IU),
@@ -996,13 +996,13 @@ Lemma Iapply_rule : forall (A B : Type) (a:Distr A) (f:A->Distr B)(I:IU)(F:A->IU
 unfold Iokfun,Iok;intros.
 apply Ieq_incl_trans with (Imu a (fun x => Imu (f x) G0)); auto.
 apply Iincl_trans with (Imu a F); auto.
-Save.
+Qed.
 
 (** *** Rule for abstraction *)
 Lemma Ilambda_rule : forall (A B:Type)(f:A->Distr B)(F:A->IU)(G:A -> B->IU),
    (forall x:A, Iok (F x) (f x) (G x)) -> Iokfun F f G.
 trivial.
-Save.
+Qed.
 
 
 (** *** Rule for conditional *)
@@ -1015,7 +1015,7 @@ repeat rewrite Mif_eq.
 repeat rewrite low_Iplus; repeat rewrite low_Imultk.
 repeat rewrite up_Iplus; repeat rewrite up_Imultk.
 repeat rewrite low_Imu; repeat rewrite up_Imu; auto.
-Save.
+Qed.
 
 Lemma Iifrule :
   forall (A:Type)(b:(Distr bool))(f1 f2:Distr A)(I1 I2:IU)(F:A->IU),
@@ -1028,7 +1028,7 @@ repeat rewrite low_Iplus; repeat rewrite low_Imultk.
 apply Uplus_le_compat; auto.
 repeat rewrite up_Iplus; repeat rewrite up_Imultk.
 apply Uplus_le_compat; auto.
-Save.
+Qed.
 
 (** *** Rule for fixpoints
 with $\phi(x)=F(\phi)(x)$, $p_i$ an decreasing sequence of intervals functions ($p_{i+1}(x)\subseteq p_i(x)$) such that $p_0(x)$ contains $0$ for all $x$.
@@ -1065,7 +1065,7 @@ rewrite up_lim; rewrite up_Imu.
 unfold Mfix,mu_lub; simpl.
 apply lub_glb_le; intros.
 case (H n x); auto.
-Save.
+Qed.
 End IRuleseq.
 
 Section ITransformFix.
@@ -1076,7 +1076,7 @@ Variable ImuF : (A -o> IUord) -m> A -o> IUord.
 
 Lemma ImuF_stable : forall I J, I==J -> ImuF I == ImuF J.
 intros; apply fmon_stable with (f:=ImuF); auto.
-Save.
+Qed.
 
 Section IF_muF_results.
 Hypothesis Iincl_F_ImuF :
@@ -1099,7 +1099,7 @@ apply Ole_trans with (low (Imu (Miter F n x) (Q x))); auto.
 apply lub_glb_le; intros; auto.
 case (H n x); intros.
 apply Ole_trans with (up (Imu (Miter F n x) (Q x))); auto.
-Save.
+Qed.
 Hint Resolve Iincl_fix_ifix.
 
 (*
@@ -1125,13 +1125,13 @@ apply (@muf_mon_succ A B F F_mon n x).
 case (Iiter_decr ImuF ImuF_mon x n); auto.
 case (H n x); intros.
 apply Ole_trans with (up (Imu (iter F n x) (Q x))); auto.
-Save.
+Qed.
 Hint Resolve Iincl_fix_mu.
 
 Lemma Iincl_ImuF : forall f, (forall x, Iincl (f x) (ImuF f x)) -> forall x, Iincl (Imu (Mfix F F_mon x) (Q x)) (f x).
 intros; apply Iincl_trans with (Ifix ImuF ImuF_mon x); auto.
 apply Iincl_inv; auto.
-Save.
+Qed.
 
 Hypothesis muF_F_le :
     forall f x, (forall y, le_Distr (f y) (Mfix F F_mon y)) ->
@@ -1147,7 +1147,7 @@ apply muF_mon; auto.
 apply muF_F_le.
 repeat red; intros; unfold Mfix, mu_lub,mu_lub_;simpl.
 apply le_lub with (f:=fun n => mu (iter F n y) f); auto.
-Save.
+Qed.
 
 End F_muF_results.
 Hint Resolve mu_mufix_le mufix_mu_le.
@@ -1159,7 +1159,7 @@ Lemma mufix_mu :
 intros; apply Ole_antisym; auto.
 apply mufix_mu_le; intros; auto.
 rewrite (H f x0); auto.
-Save.
+Qed.
 Hint Resolve mufix_mu.
 End Fix_muF.
 
@@ -1183,7 +1183,7 @@ rewrite mufix_eq; auto.
 apply muF_stable; auto.
 red; intros; auto.
 apply (mufix_mu (fun (x:A) => f_one B) muF_mon F_muF_eq_one x0).
-Save.
+Qed.
 Hint Resolve muF_pterm.
 End Fix_Term.
 
@@ -1209,7 +1209,7 @@ apply Uinv_le_perm_right.
 apply muF_le with (muF:=muF qinv) (q:=qinv) (f:=finv f) (x:=x); auto.
 unfold pterm; replace (qinv x) with (finv (q x)); auto.
 apply mu_monotonic; intro; unfold fesp,f_one; repeat Usimpl; auto.
-Save.
+Qed.
 
 Hypothesis F_muF_le :
     forall f x, (forall y, le_Distr (f y) (Mfix F F_mon y))
@@ -1222,7 +1222,7 @@ apply muF_le with (muF:=muF q); auto.
 apply Ole_trans with (f x & pterm x).
 rewrite H1; auto.
 apply muF_le_term; auto.
-Save.
+Qed.
 
 End Fix_muF_Term.
 
@@ -1239,30 +1239,30 @@ End IFixrule.
 
 Lemma Flip_ctrue : mu Flip ctrue == [1/2].
 unfold Flip; auto.
-Save.
+Qed.
 
 Lemma Flip_cfalse : mu Flip cfalse == [1/2].
 unfold Flip; auto.
-Save.
+Qed.
 
 Lemma ok_Flip :   forall q : bool -> U, ok ([1/2] * q true + [1/2] * q false) Flip q.
 red; unfold Flip, flip; simpl; auto.
-Save.
+Qed.
 
 Lemma okup_Flip :   forall q : bool -> U, okup ([1/2] * q true + [1/2] * q false) Flip q.
 red; unfold Flip, flip; simpl; auto.
-Save.
+Qed.
 
 Hint Resolve ok_Flip okup_Flip Flip_ctrue Flip_cfalse.
 
 Lemma Flip_eq : forall q : bool -> U, mu Flip q == [1/2] * q true + [1/2] * q false.
 intros; apply Ole_antisym; auto.
-Save.
+Qed.
 Hint Resolve Flip_eq.
 
 Lemma IFlip_eq : forall Q : bool -> IU, Ieq (Imu Flip Q) (Iplus (Imultk [1/2] (Q true)) (Imultk [1/2] (Q false))).
 red; unfold Flip, flip; simpl; auto.
-Save.
+Qed.
 Hint Resolve IFlip_eq.
 
 (** ** Rules for total (well-founded) fixpoints *)
@@ -1282,14 +1282,14 @@ Lemma Acc_iter_distr :
 intros x r; elim r using Acc_inv_dep; simpl; intros.
 case s; simpl; intros.
 apply Fext; auto.
-Save.
+Qed.
 
 Lemma WfFix_eq : forall x, WfFix x == F (fun (y:A) (p:R y x) => WfFix y).
 intro x; unfold WfFix,Fix.
 case (Rwf x); simpl; intros.
 apply Fext; intros.
 apply Acc_iter_distr.
-Save.
+Qed.
 
 Variable P : Distr B -> Prop.
 Hypothesis Pext : forall m1 m2, m1 == m2 -> P m1 -> P m2.
@@ -1301,7 +1301,7 @@ intros; pattern x; apply well_founded_ind with (R:=R); trivial; intros.
 apply Pext with (m1:=  F (fun (y:A) (p:R y x0) => WfFix y)).
 apply Oeq_sym; apply WfFix_eq.
 apply H; auto.
-Save.
+Qed.
 
 End Wellfounded.
 

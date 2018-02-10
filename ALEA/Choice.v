@@ -84,7 +84,7 @@ rewrite <- (mu_stable_plus p2 H1); auto.
 apply (mu_monotonic p1); intro x.
 apply (mu_monotonic p2); intro y.
 apply Ole_trans with ((Q x) + (Q y)); auto.
-Save.
+Qed.
 
 End CHOICE.
 End Choice.

@@ -21,13 +21,13 @@ Lemma zero_one_not_one :
 forall (A:Type)(f:MF A) x, zero_one f -> ~ 1 <= f x -> f x == 0.
 intros; apply (H x); intros; auto.
 absurd (1 <= f x); auto.
-Save.
+Qed.
 
 Lemma zero_one_not_zero :
 forall (A:Type)(f:MF A) x, zero_one f -> ~ f x <= 0 -> f x == 1.
 intros; apply (H x); intros; auto.
 absurd (0 <= f x); auto.
-Save.
+Qed.
 
 Hint Resolve zero_one_not_one zero_one_not_zero.
 
@@ -43,13 +43,13 @@ apply orc_left.
 rewrite H2; auto.
 apply orc_right.
 rewrite H1; rewrite H2; auto.
-Save.
+Qed.
 
 Lemma fesp_conj_zero_one : forall (A:Type)(f g:MF A),
       zero_one f -> fesp f g == fconj f g.
 unfold fesp,fconj; intros; simpl; apply ford_eq_intro; intro x;
 apply Uesp_zero_one_mult_left; auto.
-Save.
+Qed.
 
 Lemma fconj_zero_one : forall (A:Type)(f g:MF A),
       zero_one f -> zero_one g ->  zero_one (fconj f g).
@@ -63,7 +63,7 @@ apply orc_left.
 rewrite H2; auto.
 apply orc_right.
 rewrite H1; rewrite H2; auto.
-Save.
+Qed.
 
 Lemma fplus_zero_one : forall (A:Type)(f g:MF A),
       zero_one f -> zero_one g ->  zero_one (fplus f g).
@@ -77,7 +77,7 @@ apply orc_right.
 rewrite H2; auto.
 apply orc_right.
 rewrite H1; auto.
-Save.
+Qed.
 
 Lemma finv_zero_one : forall (A:Type)(f :MF A),
       zero_one f -> zero_one (finv f).
@@ -87,17 +87,17 @@ apply orc_right.
 rewrite H0; auto.
 apply orc_left.
 rewrite H0; auto.
-Save.
+Qed.
 
 Lemma fesp_zero_one_mult_left : forall (A:Type)(f:MF A)(p:U),
       zero_one f -> forall x, f x & p == f x * p.
 intros; apply Uesp_zero_one_mult_left; auto.
-Save.
+Qed.
 
 Lemma fesp_zero_one_mult_right : forall (A:Type)(p:U)(f:MF A),
      zero_one f -> forall x, p & f x == p * f x.
 intros; apply Uesp_zero_one_mult_right; auto.
-Save.
+Qed.
 Hint Resolve fesp_zero_one_mult_left fesp_zero_one_mult_right.
 
 (** ** Covering functions *)
@@ -109,44 +109,44 @@ Lemma cover_eq_one : forall (A:Type)(P:set A)(f:MF A) (z:A),
        cover P f -> P z -> f z == 1.
 unfold cover; intros.
 case (H z); intuition.
-Save.
+Qed.
 
 Lemma cover_eq_zero : forall (A:Type)(P:set A)(f:MF A) (z:A),
        cover P f -> ~ P z -> f z == 0.
 unfold cover;intros.
 case (H z); intuition.
-Save.
+Qed.
 
 Lemma cover_orc_0_1 : forall (A:Type)(P:set A)(f:MF A),
    cover P f -> forall x, orc (f x == 0) (f x == 1).
 intros; apply (excluded_middle (A:=P x)); intros; auto.
 apply orc_right; apply cover_eq_one with (P:=P) (f:=f); auto.
 apply orc_left; apply cover_eq_zero with (P:=P) (f:=f); auto.
-Save.
+Qed.
 
 Lemma cover_zero_one : forall (A:Type)(P:set A)(f:MF A),
    cover P f -> zero_one f.
 red; intros; apply cover_orc_0_1 with A P; trivial.
-Save.
+Qed.
 
 Lemma zero_one_cover : forall (A:Type)(f:MF A),
    zero_one f -> cover (fun x => 1 <= f x) f.
 unfold zero_one,cover; intros; split; intros; auto.
 apply (H x); intros; auto.
 absurd (1 <= f x); auto.
-Save.
+Qed.
 
 Lemma cover_esp_mult_left : forall (A:Type)(P:set A)(f:MF A)(p:U),
       cover P f -> forall x, f x & p == f x * p.
 intros; apply Uesp_zero_one_mult_left.
 apply (cover_orc_0_1 H x).
-Save.
+Qed.
 
 Lemma cover_esp_mult_right : forall (A:Type)(P:set A)(p:U)(f:MF A),
      cover P f -> forall x, p & f x == p * f x.
 intros; apply Uesp_zero_one_mult_right.
 exact (cover_orc_0_1 H x).
-Save.
+Qed.
 Hint Immediate cover_esp_mult_left cover_esp_mult_right.
 
 Lemma cover_elim : forall (A:Type)(P:set A)(f:MF A),
@@ -154,7 +154,7 @@ cover P f -> forall x, orc (~P x /\ f x == 0) (P x /\ f x == 1).
 intros; apply (excluded_middle (A:=P x)); intros; auto.
 apply orc_right; split; auto; apply cover_eq_one with (P:=P) (f:=f); auto.
 apply orc_left; split; auto; apply cover_eq_zero with (P:=P) (f:=f); auto.
-Save.
+Qed.
 
 
 Lemma cover_eq_one_elim_class : forall (A:Type)(P Q:set A)(f:MF A),
@@ -163,14 +163,14 @@ intros; apply (excluded_middle (A:=P z)); intros; auto.
 case Udiff_0_1.
 rewrite <- H0.
 apply Oeq_sym; apply (cover_eq_zero (P:=P) (f:=f)); auto.
-Save.
+Qed.
 
 Lemma cover_eq_one_elim : forall (A:Type)(P:set A)(f:MF A),
        cover P f -> forall z, f z == 1 -> ~ ~ P z.
 intros.
 apply (cover_eq_one_elim_class (Q:=fun z => ~ ~ P z) H); auto.
 red; auto.
-Save.
+Qed.
 
 Lemma cover_eq_zero_elim : forall (A:Type)(P:set A)(f:MF A) (z:A),
        cover P f -> f z == 0 -> ~ P z.
@@ -178,12 +178,12 @@ intros; apply (excluded_middle (A:=P z)); intros; auto.
 case Udiff_0_1.
 rewrite <- H0.
 apply (cover_eq_one (P:=P) (f:=f)); auto.
-Save.
+Qed.
 
 Lemma cover_unit : forall (A:Type)(P:set A)(f:MF A)(a:A),
              cover P f -> P a -> 1 <= mu (Munit a) f.
 simpl; unfold unit,cover; firstorder.
-Save.
+Qed.
 
 
 Lemma cover_let : forall (A B:Type)(m1: distr A)(m2: A->distr B) (P:set A)(cP:MF A)(f:MF B)(p:U),
@@ -198,7 +198,7 @@ intro x.
 apply (cover_elim (P:=P) (f:=cP) H x); auto; intros (Hp,cPeq).
 rewrite cPeq; repeat Usimpl; auto.
 rewrite cPeq; repeat Usimpl; auto.
-Save.
+Qed.
 
 Lemma cover_incl_fle : forall (A:Type)(P Q:set A)(f g:MF A),
       cover P f -> cover Q g -> incl P Q ->  f <= g.
@@ -206,39 +206,39 @@ intros; intro x.
 apply (cover_elim H x); auto; intros (Hp,Hfeq).
 rewrite Hfeq; auto.
 rewrite (cover_eq_one x H0); auto.
-Save.
+Qed.
 
 Lemma cover_incl_eq: forall (A:Type)(P:set A)(f g:MF A),
       cover P f -> cover P g ->  f == g.
 intros; apply Ole_antisym.
 apply (cover_incl_fle H H0); auto.
 apply (cover_incl_fle H0 H); auto.
-Save.
+Qed.
 
 Lemma cover_equiv_stable : forall (A:Type)(P Q:set A)(EQ : equiv P Q)(f:MF A),
       cover P f -> cover Q f.
 unfold cover; firstorder.
-Save.
+Qed.
 
 Lemma cover_eq_stable : forall (A:Type)(P:set A)(f g:MF A),
       cover P f -> f == g -> cover P g.
 unfold cover; intros.
 case (H x); case (ford_eq_elim H0 x); split; intros; apply Ole_trans with (f x); auto.
-Save.
+Qed.
 
 Lemma cover_equiv_eq_stable : forall (A:Type)(P Q:set A)(f g:MF A),
       cover P f -> equiv P Q -> f == g -> cover Q g.
 intros; assert (cover P g).
 apply cover_eq_stable with f; auto.
 apply cover_equiv_stable with P; auto.
-Save.
+Qed.
 
 Add Parametric Morphism (A:Type) : (cover (A:=A))
 with signature equiv (A:=A) ==> Oeq (O:=MF A) ==> iff as cover_equiv_compat.
 intuition.
 apply cover_equiv_eq_stable with x x0; auto.
 apply cover_equiv_eq_stable with y y0; auto.
-Save.
+Qed.
 
 Lemma cover_union : forall (A:Type)(P Q:set A)(f g : MF A),
      cover P f -> cover Q g -> cover (union P Q) (fplus f g).
@@ -251,7 +251,7 @@ assert (~P x); try tauto.
 assert (~Q x); try tauto.
 apply Ole_trans with (0+0); auto.
 apply Uplus_le_compat; auto.
-Save.
+Qed.
 
 Lemma cover_inter_esp : forall (A:Type)(P Q:set A)(f g : MF A),
       cover P f -> cover Q g -> cover (inter P Q) (fesp f g).
@@ -265,7 +265,7 @@ apply orc_intro; tauto.
 apply H6; auto; intro.
 apply Ole_trans with (f x); auto.
 apply Ole_trans with (g x); auto.
-Save.
+Qed.
 
 Lemma cover_inter_mult : forall (A:Type)(P Q:set A)(f g : MF A),
       cover P f -> cover Q g -> cover (inter P Q) (fun x => f x * g x).
@@ -279,7 +279,7 @@ apply orc_intro; tauto.
 apply H6; auto; intro.
 apply Ole_trans with (f x); auto.
 apply Ole_trans with (g x); auto.
-Save.
+Qed.
 
 Lemma cover_compl : forall (A:Type)(P:set A)(f:MF A),
       cover P f -> cover (compl P) (finv f).
@@ -289,12 +289,12 @@ apply Ole_trans with ([1-]0); auto.
 apply Ole_trans with ([1-]1); auto.
 apply Uinv_le_compat.
 apply class_double_neg with (P x); auto.
-Save.
+Qed.
 
 Lemma cover_empty : forall (A:Type), cover (empty A) (fzero A).
 red; unfold fzero; intuition.
 case H.
-Save.
+Qed.
 
 (** * Caracteristic functions *)
 
@@ -306,43 +306,43 @@ Lemma carac_incl: forall (A:Type)(P Q:A -> Prop)(Pdec: dec P)(Qdec: dec Q),
 intros; intro x; unfold carac.
 case (Pdec x); case (Qdec x); intuition.
 absurd (Q x); intuition.
-Save.
+Qed.
 
 Lemma carac_monotonic : forall (A B:Type)(P:A -> Prop)(Q:B->Prop)(Pdec: dec P)(Qdec: dec Q) x y,
                                 (P  x -> Q y) -> carac Pdec x <= carac Qdec y.
 intros; unfold carac; case (Pdec x); intros; auto.
 case (Qdec y); intros; auto.
 absurd (Q y); auto.
-Save.
+Qed.
 Hint Resolve carac_monotonic.
 
 Lemma carac_eq_compat : forall (A B:Type)(P:A -> Prop)(Q:B->Prop)(Pdec: dec P)(Qdec: dec Q) x y,
                                 (P  x <-> Q y) -> carac Pdec x == carac Qdec y.
 intros; apply Ole_antisym; intuition.
-Save.
+Qed.
 Hint Resolve carac_eq_compat.
 
 Lemma carac_one : forall (A:Type)(P:A -> Prop)(Pdec:dec P)(z:A),
        P z -> carac Pdec z == 1.
 unfold carac; intros; case (Pdec z); intuition.
-Save.
+Qed.
 
 Lemma carac_zero : forall (A:Type)(P:A -> Prop)(Pdec:dec P)(z:A),
        ~ P z -> carac Pdec z == 0.
 unfold carac; intros; case (Pdec z); intuition.
-Save.
+Qed.
 
 Lemma cover_dec : forall (A:Type)(P:set A)(Pdec : dec P), cover P (carac Pdec).
 red; unfold carac; intros.
 case (Pdec x); intuition.
-Save.
+Qed.
 
 Lemma cover_mult_fun : forall (A:Type)(P:set A)(cP : MF A)(f g:A->U),
   (forall x, P x -> f x == g x) -> cover P cP -> forall x, cP x * f x == cP x * g x.
 intros.
 apply (cover_elim H0 x); auto; intuition.
 rewrite H3; repeat Usimpl; auto.
-Save.
+Qed.
 
 Lemma cover_esp_fun : forall (A:Type)(P:set A)(cP : MF A)(f g:A->U),
   (forall x, P x -> f x == g x) -> cover P cP -> forall x, cP x & f x == cP x & g x.
@@ -350,7 +350,7 @@ intros.
 apply (cover_elim H0 x); auto; intuition.
 rewrite H3; repeat Usimpl; auto.
 rewrite H3; repeat Usimpl; auto.
-Save.
+Qed.
 
 
 Lemma cover_esp_fun_le : forall (A:Type)(P:set A)(cP : MF A)(f g:A->U),
@@ -359,7 +359,7 @@ intros.
 apply (cover_elim H0 x); auto; intuition.
 rewrite H3; repeat Usimpl; auto.
 rewrite H3; repeat Usimpl; auto.
-Save.
+Qed.
 Hint Resolve cover_esp_fun_le.
 
 Lemma cover_ok : forall (A:Type)(P Q:set A)(f g : MF A),
@@ -371,7 +371,7 @@ rewrite H4; auto.
 apply (cover_elim H1 x); auto; intuition.
 rewrite H6; auto.
 case (H x H3 H5).
-Save.
+Qed.
 Hint Resolve cover_ok.
 
 (** * Conditional probabilities *)
@@ -386,7 +386,7 @@ Defined.
 Lemma mcond_simpl : forall A (m:M A) (f g: MF A),
       mcond m f g = m (fconj f g) / m f.
 trivial.
-Save.
+Qed.
 
 Lemma mcond_stable_plus : forall A (m:distr A) (f: MF A), stable_plus (mcond (mu m) f).
 red; intros.
@@ -400,7 +400,7 @@ apply (mu_stable_eq m).
 simpl; apply ford_eq_intro; intro x; unfold fconj,fplus; auto.
 apply Udistr_plus_left; auto.
 apply (H x).
-Save.
+Qed.
 
 Lemma mcond_stable_inv : forall A (m:distr A) (f: MF A), stable_inv (mcond (mu m) f).
 red; intros.
@@ -414,7 +414,7 @@ apply (mu_monotonic m).
 intro x; unfold fconj,finv,fminus; auto.
 rewrite stable_minus_distr; trivial.
 rewrite Udiv_minus; trivial.
-Save.
+Qed.
 
 Lemma mcond_stable_mult : forall A (m:distr A) (f: MF A), stable_mult (mcond (mu m) f).
 red; intros.
@@ -427,7 +427,7 @@ simpl; apply ford_eq_intro; unfold fconj, fmult; intro; auto.
 apply (mu_stable_mult m).
 apply (mu_monotonic m); auto.
 apply fle_fconj_left.
-Save.
+Qed.
 
 Lemma mcond_continuous : forall A (m:distr A) (f: MF A), continuous (mcond (mu m) f).
 red; intros.
@@ -445,7 +445,7 @@ intro x; simpl.
 rewrite Udiv_mult; auto.
 apply (mu_monotonic m); auto.
 apply fle_fconj_left.
-Save.
+Qed.
 
 
 Definition Mcond A (m:distr A) (f:MF A) : distr A :=
@@ -459,18 +459,18 @@ Definition Mrestr A (cp:U) (m:M A) : M A := UMult cp @ m.
 
 Lemma Mrestr_simpl : forall A cp (m:M A) f, Mrestr cp m f = cp * (m f).
 trivial.
-Save.
+Qed.
 
 Lemma Mrestr0 : forall A cP (m:M A), cP <= 0 -> forall f, Mrestr cP m f == 0.
 intros.
 apply Ule_zero_eq; apply Ole_trans with cP;auto.
-Save.
+Qed.
 
 Lemma Mrestr1 : forall A cP (m:M A), 1 <= cP -> forall f, Mrestr cP m f == m f.
 intros.
 assert (H1:cP==1); auto.
 rewrite Mrestr_simpl; rewrite H1; auto.
-Save.
+Qed.
 
 Definition distr_restr : forall  A (P:Prop) (cp:U) (m:M A),
      ((P  -> 1 <= cp) /\ (~ P -> cp <= 0)) -> (P -> stable_inv m) ->
@@ -500,7 +500,7 @@ Lemma distr_restr_simpl : forall  A (P:Prop) (cp:U) (m:M A)
      (Hplus:P -> stable_plus m)(Hmult:P -> stable_mult m)(Hcont:P -> continuous m) f,
      mu (distr_restr cp Hp Hinv Hplus Hmult Hcont) f = cp * m f.
 trivial.
-Save.
+Qed.
 
 
 (** ** Modular reasoning on programs *)
@@ -509,7 +509,7 @@ Lemma range_cover : forall A (P:A -> Prop) d cP, range P d -> cover P cP ->
    forall f, mu d f == mu d (fun x => cP x * f x).
 intros; apply range_eq with (P:=P); auto; intros.
 rewrite (cover_eq_one a H0); auto.
-Save.
+Qed.
 
 Lemma mu_cut : forall (A:Type)(m:distr A)(P:set A)(cP f g:MF A),
   cover P cP -> (forall x, P x -> f x == g x) -> 1<=mu m cP -> mu m f == mu m g.
@@ -520,7 +520,7 @@ apply mu_stable_eq.
 simpl; apply ford_eq_intro; intro x; unfold fesp;
    apply (cover_esp_fun (P:=P) (cP:=cP)); auto.
 apply Oeq_sym; apply (mu_esp_one m cP g); auto.
-Save.
+Qed.
 
 (** ** Conditional probabilities *)
 
@@ -551,7 +551,7 @@ Lemma retract_fin_inv :
      forall (P:A->Prop) (f:A->U),
               retract_fin P f -> forall Q (FQ: finite Q), incl Q P -> forall x, ~(Q x) -> (P x) -> sigma_fin f FQ <=[1-]f x.
 intros; apply Uinv_le_perm_right; auto.
-Save.
+Qed.
 
 Hint Immediate retract_fin_inv.
 
@@ -559,7 +559,7 @@ Lemma retract_fin_incl : forall P Q f, retract_fin P f -> incl Q P -> retract_fi
 unfold retract_fin; intros.
 apply (H Q0 FQ); auto.
 apply incl_trans with Q; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_monotonic : forall (f g : A -> U)(P:A->Prop)(FP:finite P),
        (forall x, P x -> (f x)<=(g x))-> sigma_fin f FP <= sigma_fin g FP.
@@ -568,14 +568,14 @@ apply Ole_trans with (f x + sigma_fin g FP); repeat Usimpl.
 apply IHFP.
 intros; case (e x0); unfold add in *; intuition.
 apply H; case (e x); unfold add in *; intuition.
-Save.
+Qed.
 
 Lemma sigma_fin_eq_compat :
 forall (f g : A -> U)(P:A->Prop)(FP:finite P),
        (forall x, P x -> (f x)==(g x))-> sigma_fin f FP == sigma_fin g FP.
 intros; apply Ole_antisym; apply sigma_fin_monotonic; auto.
 intros; rewrite (H x); auto.
-Save.
+Qed.
 
 
 Lemma retract_fin_le : forall (P:A->Prop) (f g:A->U),
@@ -585,7 +585,7 @@ apply Ole_trans with (g x); auto.
 apply Ole_trans with ([1-] sigma_fin g FQ); auto.
 apply Uinv_le_compat.
 apply sigma_fin_monotonic; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_mult : forall (f : A -> U) c (P:A->Prop)(FP:finite P),
        retract_fin P f -> sigma_fin (fun k  => c * f k) FP == c * sigma_fin f FP.
@@ -600,7 +600,7 @@ rewrite IHFP; auto.
 apply retract_fin_incl with P; auto.
 apply H; auto.
 case (e x); intuition.
-Save.
+Qed.
 
 Lemma sigma_fin_plus : forall (f g: A -> U) (P:A->Prop)(FP:finite P),
        sigma_fin (fun k  => f k + g k) FP == sigma_fin f FP + sigma_fin g FP.
@@ -609,13 +609,13 @@ repeat Usimpl; auto.
 rewrite IHFP.
 repeat norm_assoc_left; repeat Usimpl.
 repeat norm_assoc_right; repeat Usimpl; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_prod_maj :
 forall (f g : A -> U)(P:A->Prop)(FP:finite P),
        sigma_fin (fun k  => f k * g k) FP <= sigma_fin f FP.
 induction FP; simpl; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_prod_le :
 forall (f g : A -> U) (c:U) , (forall k, f k <= c) -> forall (P:A->Prop)(FP:finite P),
@@ -630,7 +630,7 @@ apply Ole_trans with ((f x) * (g x) + (c * sigma_fin g FP)); auto.
 apply Ole_trans with ( c * (g x) + (c * sigma_fin g FP)); auto.
 rewrite Udistr_plus_left; auto.
 case (e x); intuition.
-Save.
+Qed.
 
 Lemma sigma_fin_prod_ge :
 forall (f g : A -> U) (c:U) , (forall k, c <= f k) -> forall (P:A->Prop)(FP:finite P),
@@ -644,7 +644,7 @@ apply retract_fin_incl with P; auto.
 apply Ole_trans with ((f x) * (g x) + (c * sigma_fin g FP)); auto.
 apply Ole_trans with ( c * (g x) + (c * sigma_fin g FP)); auto.
 case (e x); intuition.
-Save.
+Qed.
 Hint Resolve sigma_fin_prod_maj sigma_fin_prod_ge sigma_fin_prod_le.
 
 Lemma sigma_fin_inv : forall (f g : A -> U)(P:A->Prop)(FP:finite P),
@@ -695,12 +695,12 @@ rewrite (Umult_one_right (f x)); auto.
 rewrite (Uplus_sym (f x) ([1-] (f x + sigma_fin f FP))).
 apply Oeq_sym; apply Uinv_plus_left; auto.
 apply Uinv_le_perm_right; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_equiv : forall f P Q  (FP:finite P) (e:equiv P Q),
     (sigma_fin f (fin_equiv e FP)) = (sigma_fin f FP).
 induction FP; simpl; intros; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_rem : forall f P (FP:finite P) a,
              P a -> sigma_fin f FP == f a + sigma_fin f (finite_rem decA a FP).
@@ -712,7 +712,7 @@ rewrite sigma_fin_equiv; auto.
 rewrite (IHFP a); auto.
 case (e a); unfold add; intuition.
 case f0; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_incl : forall f P (FP:finite P) Q (FQ:finite Q),
               (incl P Q) -> sigma_fin f FP <= sigma_fin f FQ.
@@ -759,19 +759,19 @@ assert (Q0 x);auto.
 assert (Q1 x);auto.
 case (e0 x); intuition.
 case H4; intuition.
-Save.
+Qed.
 
 Lemma sigma_fin_unique : forall f P Q (FP:finite P) (FQ:finite Q), (equiv P Q) -> sigma_fin f FP == sigma_fin f FQ.
 intros; apply Ole_antisym.
 apply sigma_fin_incl; auto.
 apply sigma_fin_incl; auto.
-Save.
+Qed.
 
 Lemma sigma_fin_cte : forall c P (FP:finite P),
        sigma_fin (fun _ => c) FP == (size FP) */ c.
 induction FP; auto.
 simpl sigma_fin; simpl size; rewrite IHFP; auto.
-Save.
+Qed.
 
 (*
 Lemma sigma_fin_continuous : forall P (FP:finite P),
@@ -784,7 +784,7 @@ apply Ole_trans with
 red in H; rewrite lub_eq_plus; auto.
 intro y; apply H.
 intro y; apply sigma_fin_monotonic; intros; apply H.
-Save.
+Qed.
 
 
 (** *** Definition and Properties of [random_fin] *)
@@ -794,7 +794,7 @@ Variable FP : finite P.
 Let s:= (size FP - 1)%nat.
 Lemma pred_size_le : (size FP <=S s)%nat.
 unfold s; omega.
-Save.
+Qed.
 Hint Resolve pred_size_le.
 
 
@@ -802,7 +802,7 @@ Lemma pred_size_eq : notempty P -> size FP =S s.
 destruct FP; intros; simpl.
 unfold notempty in *; contradiction.
 unfold s; simpl; omega.
-Save.
+Qed.
 
 Definition random_fin :M A := fun (f:A->U) => sigma_fin (fun k => Unth s *  f k) FP.
 
@@ -820,13 +820,13 @@ subst; intuition.
 apply le_S_n.
 apply le_trans with (size FP); auto.
 rewrite (size_finite_rem decA x FP); auto.
-Save.
+Qed.
 
 Lemma random_fin_stable_inv : stable_inv random_fin.
 unfold random_fin, stable_inv, finv; intros; auto.
 rewrite (@sigma_fin_inv (fun k => [1/]1+s) f P FP); auto.
 apply fnth_retract_fin; trivial.
-Save.
+Qed.
 
 Lemma random_fin_stable_plus : stable_plus random_fin.
 unfold random_fin, stable_plus, fplus; intros; auto.
@@ -836,7 +836,7 @@ apply Oeq_trans with
 apply sigma_fin_eq_compat; intros; auto.
 apply sigma_fin_plus with (f:=fun k => Unth s * f k)
                       (g:=fun k => Unth s * g k); auto.
-Save.
+Qed.
 
 Lemma random_fin_stable_mult : stable_mult random_fin.
 unfold random_fin, stable_mult, fmult; intros; auto.
@@ -845,13 +845,13 @@ apply sigma_fin_eq_compat; intros; auto.
 apply sigma_fin_mult with (f:=fun k  => Unth s * f k).
 apply retract_fin_le with (fun (k:A) => [1/]1+s); auto.
 apply fnth_retract_fin; auto.
-Save.
+Qed.
 
 Lemma random_fin_monotonic : monotonic random_fin.
 unfold monotonic, random_fin; intros.
 red in H.
 apply sigma_fin_monotonic; auto.
-Save.
+Qed.
 
 Lemma random_fin_continuous : continuous random_fin.
 unfold random_fin, continuous; intros.
@@ -862,7 +862,7 @@ simpl; rewrite <- lub_eq_mult; auto.
 apply sigma_fin_continuous with (h:=fun n : nat => fmult ([1/]1+s) (h n)); auto.
 intros y z; unfold fmult.
 Usimpl; apply H.
-Save.
+Qed.
 
 
 Definition Random_fin : (distr A).
@@ -882,7 +882,7 @@ apply sigma_fin_eq_compat.
 intros; repeat Usimpl; auto.
 rewrite sigma_fin_cte.
 rewrite pred_size_eq; auto.
-Save.
+Qed.
 End RandomFinite.
 
 Lemma random_fin_cover :
@@ -899,14 +899,14 @@ case (decQ x); intro.
 rewrite size_inter_add_in; auto.
 rewrite Nmult_S; auto.
 repeat Usimpl; rewrite size_inter_add_notin; auto.
-Save.
+Qed.
 
 Lemma random_fin_P : forall P (FP:finite P) (decP:dec P),
          notempty P -> mu (Random_fin FP) (cover decP) ==1.
 intros; rewrite random_fin_cover.
 rewrite (size_inter_incl decA decP FP FP); auto.
 pattern (size FP) at 1; rewrite pred_size_eq; auto.
-Save.
+Qed.
 *)
 End RandomFinite.
 
@@ -951,7 +951,7 @@ Lemma nb_elts_true : forall  (P:nat -> Prop)(Pdec : dec P)(n:nat),
 induction n; simpl; intros; auto.
 case (Pdec n); intros; auto with arith.
 absurd (P n); auto with arith.
-Save.
+Qed.
 Hint Resolve nb_elts_true.
 
 (** - the probability for a random number between 0 and n to satisfy P is equal
@@ -970,11 +970,11 @@ intros k n H; induction H; intros; auto with arith.
 simpl.
 case (lt_dec k m); intros; auto with arith.
 absurd ((m<k)%nat); auto with arith.
-Save.
+Qed.
 
 Lemma nb_elts_lt_ge : forall k n, (n <= k)%nat -> nb_elts (lt_dec k) n = n.
 intros; auto with zarith.
-Save.
+Qed.
 Hint Resolve nb_elts_lt_ge nb_elts_lt_le.
 
 Lemma Random_lt : forall n k, mu (Random n) (carac_lt k) == k */ [1/]1+n.
@@ -984,7 +984,7 @@ rewrite nb_elts_lt_le; auto.
 rewrite nb_elts_lt_ge; auto.
 apply Ole_antisym; auto.
 apply Ole_trans with 1; auto.
-Save.
+Qed.
 
 Hint Resolve Random_lt.
 
@@ -994,7 +994,7 @@ apply (mu_stable_eq (Random n)); auto.
 unfold carac_le,carac_lt.
 simpl; apply ford_eq_intro; intro x.
 apply carac_eq_compat; intuition.
-Save.
+Qed.
 
 Hint Resolve Random_le.
 

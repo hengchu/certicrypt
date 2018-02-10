@@ -28,7 +28,7 @@ Defined.
 Lemma star_simpl : forall (A B:Type) (a:M A) (F:A -> M B)(f:MF B),
         star a F f =  a (fun x => F x f).
 trivial.
-Save.
+Qed.
 
 (** ** Properties of monadic operators *)
 Lemma law1 : forall (A B:Type) (x:A) (F:A -> M B) (f:MF B), star (unit x) F f == F x f.
@@ -57,12 +57,12 @@ Hint Unfold fplusok.
 
 Lemma fplusok_sym : forall (A:Type) (f g : MF A) , fplusok f g -> fplusok g f.
 unfold fplusok, finv; intros;  intro; auto.
-Save.
+Qed.
 Hint Immediate fplusok_sym.
 
 Lemma fplusok_inv : forall (A:Type) (f : MF A) , fplusok f (finv f).
 intros; apply fplusok_sym; unfold fplusok; auto.
-Save.
+Qed.
 Hint Resolve fplusok_inv.
 
 Lemma fplusok_le_compat : forall (A:Type)(f1 f2 g1 g2:MF A), 
@@ -71,12 +71,12 @@ unfold fplusok; intros.
 apply Ole_trans with f2; trivial.
 apply Ole_trans with (finv g2); trivial.
 apply finv_le_compat; auto.
-Save.
+Qed.
 
 Lemma fconj_fplusok : forall (A:Type)(f g h:MF A), fplusok g h -> 
           fplusok (fconj f g) (fconj f h).
 intros; apply fplusok_le_compat with g h; auto.
-Save.
+Qed.
 Hint Resolve fconj_fplusok.
 
 
@@ -110,7 +110,7 @@ rewrite Uplus_minus_simpl_right; auto.
 apply Uinv_le_perm_right.
 apply Ole_trans with (m (finv g)); auto.
 simpl; apply ford_eq_intro; intro x; unfold fplus,fminus; auto.
-Save.
+Qed.
 
 Hint Resolve stable_minus_distr.
 
@@ -121,14 +121,14 @@ intros A m splus sinv; intros.
 apply Oeq_trans with (m (fminus (fone A) f)); auto.
 apply (fmon_stable m).
 simpl; apply ford_eq_intro; intro x; unfold fminus,finv,fone,fplus; intros; auto.
-Save.
+Qed.
 Hint Resolve inv_minus_distr.
 
 Lemma le_minus_distr : forall (A : Type)(m:M A),
     forall  (f g:A -> U), m (fminus f g) <= m f.
 intros A m; intros.
 apply (fmonotonic m); intro x; rewrite fminus_eq; auto.
-Save.
+Qed.
 Hint Resolve le_minus_distr.
 
 Lemma le_plus_distr : forall (A : Type)(m:M A),
@@ -139,7 +139,7 @@ apply (fmonotonic m); intro x; unfold fminus,fesp,fplus,finv; intros; auto.
 rewrite (splus (fminus f (fesp f g)) g).
 Usimpl; auto.
 red; intro x; unfold fminus,fesp,finv; auto.
-Save.
+Qed.
 Hint Resolve le_plus_distr.
 
 Lemma le_esp_distr : forall (A : Type) (m:M A),
@@ -158,7 +158,7 @@ apply Ole_trans with (m f - m (finv g)) ; repeat Usimpl.
 apply Uminus_le_compat_right; trivial.
 rewrite <- Uminus_assoc_left.
 rewrite Uminus_assoc_right; repeat Usimpl; auto.
-Save.
+Qed.
 
 
 Lemma unit_stable_eq : forall (A:Type) (x:A), stable (unit x).
@@ -183,7 +183,7 @@ unfold star in |- *; simpl.
 apply Ole_trans with (m (finv (fun x:A => F x f))); trivial.
 apply (fmonotonic m); intro x.
 apply (H0 x f).
-Save.
+Qed.
 
 (** *** Stability for addition *)
 Lemma unit_stable_plus : forall (A:Type) (x:A), stable_plus (unit x).
@@ -243,7 +243,7 @@ Qed.
 
 Lemma unit_continuous : forall (A:Type) (x:A), continuous  (unit x).
 red; unfold unit; intros; auto.
-Save.
+Qed.
 
 Lemma star_continuous : forall (A B : Type) (m : M A)(F: A -> M B),
     continuous m -> (forall x, continuous (F x)) -> continuous (star m F).
@@ -253,7 +253,7 @@ apply (fmonotonic m); intro x.
 apply (H0 x h); auto.
 apply Ole_trans with (m (lub (c:=A-O->U) (ford_shift F @ h))); auto.
 apply Ole_trans with (1:=H (ford_shift F @ h)); auto.
-Save.
+Qed.
 
 
 End Monad.
