@@ -225,19 +225,19 @@ Module Type EXPR (UT:UTYPE) (T:TYPE UT)
 
   Fixpoint eval_expr (t:T.type) (e:expr t) (m:Mem.t k) : T.interp k t :=
    match e in expr t0 return T.interp k t0 with
-   | Ecte t c => eval_cexpr c
-   | Evar t v => m v
+   | @Ecte t c => eval_cexpr c
+   | @Evar t v => m v
    | Eop op la =>
      O.eval_op op (dmap (T.interp k) (fun t (e:expr t) => eval_expr e m) la)
-   | Eexists t x e1 e2 =>
+   | @Eexists t x e1 e2 =>
      List.existsb 
      (fun v => eval_expr e1 (Mem.upd m x v)) 
      (eval_expr e2 m)
-   | Eforall t x e1 e2 =>
+   | @Eforall t x e1 e2 =>
      List.forallb
      (fun v => eval_expr e1 (Mem.upd m x v))
      (eval_expr e2 m)
-   | Efind t x e1 e2 => 
+   | @Efind t x e1 e2 => 
      find_default 
      (fun v => eval_expr e1 (Mem.upd m x v)) 
      (eval_expr e2 m) (T.default k t)
@@ -245,23 +245,23 @@ Module Type EXPR (UT:UTYPE) (T:TYPE UT)
 
   Fixpoint ceval_expr (t:T.type) (e:expr t) (m:Mem.t k) : T.interp k t * nat :=
    match e in expr t0 return T.interp k t0 * nat with
-   | Ecte t c => ceval_cexpr c
-   | Evar t v => (m v, S O)
+   | @Ecte t c => ceval_cexpr c
+   | @Evar t v => (m v, S O)
    | Eop op la =>
      let ca := dfold_right (fun t (e:expr t) c => snd (ceval_expr e m) + c)%nat 0%nat la in
      let (r, c) := O.ceval_op op (dmap (T.interp k) (fun t (e:expr t) => eval_expr e m) la) in
      (r, c + ca)%nat
-   | Eexists t x e1 e2 =>
+   | @Eexists t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cexistsb 
       (fun v => ceval_expr e1 (Mem.upd m x v)) 
       l n
-   | Eforall t x e1 e2 =>
+   | @Eforall t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cforallb
       (fun v => ceval_expr e1 (Mem.upd m x v))
       l n
-   | Efind t x e1 e2 =>
+   | @Efind t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cfind_default
       (fun v => ceval_expr e1 (Mem.upd m x v))
@@ -292,8 +292,8 @@ Module Type EXPR (UT:UTYPE) (T:TYPE UT)
   | Dbool => true::false::nil
   | Dnat e => seq 0 (S (eval_expr e m))
   | DZ e1 e2 => Z_support (eval_expr e1 m) (eval_expr e2 m)
-  | Duser t s => US.eval k s
-  | Dprod t1 t2 s1 s2 => list_prod (eval_support s1 m) (eval_support s2 m)
+  | @Duser t s => US.eval k s
+  | @Dprod t1 t2 s1 s2 => list_prod (eval_support s1 m) (eval_support s2 m)
   end.
 
  Fixpoint ceval_support k t (s:support t) (m: Mem.t k) : list (T.interp k t) * nat :=
@@ -304,8 +304,8 @@ Module Type EXPR (UT:UTYPE) (T:TYPE UT)
     let (n1, m1) := ceval_expr e1 m in 
       let (n2, m2) := ceval_expr e2 m in 
         (Z_support n1 n2, plus m1 m2)
-  | Duser t s => US.ceval k s
-  | Dprod t1 t2 s1 s2 => 
+  | @Duser t s => US.ceval k s
+  | @Dprod t1 t2 s1 s2 => 
     let (n1, m1) := ceval_support s1 m in
     let (n2, m2) := ceval_support s2 m in
       (list_prod n1 n2, mult m1 m2)
@@ -336,8 +336,8 @@ Module Type EXPR (UT:UTYPE) (T:TYPE UT)
  Fixpoint app_expr (lt:list T.type) (tr:T.type) 
   (args:args lt) : tapp_expr lt tr -> expr tr :=
   match args in dlist _ lt0 return tapp_expr lt0 tr -> expr tr with
-  | dnil => fun e => e
-  | dcons t lt e l => fun op => app_expr tr l (op e)
+  | dnil _ => fun e => e
+  | @dcons _ _ t lt e l => fun op => app_expr tr l (op e)
   end.
 
  Definition get_uop t (e:expr t) : option (sigT (fun op => args (Uop.targs op))) :=
@@ -474,19 +474,19 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
  
  Fixpoint eqb (t1 t2:T.type) (e1:expr t1)(e2:expr t2) {struct e1} : bool :=
   match e1, e2 with
-  | Ecte t1 c1, Ecte t2 c2 => ceqb c1 c2
-  | Evar t1 v1, Evar t2 v2 => Var.veqb v1 v2
+  | @Ecte t1 c1, @Ecte t2 c2 => ceqb c1 c2
+  | @Evar t1 v1, @Evar t2 v2 => Var.veqb v1 v2
   | Eop op1 args1, Eop op2 args2 => 
     if O.eqb op1 op2 then dforall2 eqb args1 args2 else false
-  | Eexists t1 v1 e11 e12, Eexists t2 v2 e21 e22 =>
+  | @Eexists t1 v1 e11 e12, @Eexists t2 v2 e21 e22 =>
     if Var.veqb v1 v2 then
       if eqb e11 e21 then eqb e12 e22 else false
     else false 
-  | Eforall t1 v1 e11 e12, Eforall t2 v2 e21 e22 =>
+  | @Eforall t1 v1 e11 e12, @Eforall t2 v2 e21 e22 =>
     if Var.veqb v1 v2 then
      if eqb e11 e21 then eqb e12 e22 else false
     else false 
-  | Efind t1 v1 e11 e12, Efind t2 v2 e21 e22 =>
+  | @Efind t1 v1 e11 e12, @Efind t2 v2 e21 e22 =>
     if Var.veqb v1 v2 then
      if eqb e11 e21 then eqb e12 e22 else false
     else false 
@@ -630,19 +630,19 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
 
   Fixpoint eval_expr (t:T.type) (e:expr t) (m:Mem.t k) : T.interp k t :=
    match e in expr t0 return T.interp k t0 with
-   | Ecte t c => eval_cexpr c
-   | Evar t v => m v
+   | @Ecte t c => eval_cexpr c
+   | @Evar t v => m v
    | Eop op la =>
      O.eval_op op (dmap (T.interp k) (fun t (e:expr t) => eval_expr e m) la)
-   | Eexists t x e1 e2 =>
+   | @Eexists t x e1 e2 =>
      List.existsb 
      (fun v => eval_expr e1 (Mem.upd m x v)) 
      (eval_expr e2 m)
-   | Eforall t x e1 e2 =>
+   | @Eforall t x e1 e2 =>
      List.forallb
      (fun v => eval_expr e1 (Mem.upd m x v))
      (eval_expr e2 m)
-   | Efind t x e1 e2 => 
+   | @Efind t x e1 e2 => 
      find_default 
      (fun v => eval_expr e1 (Mem.upd m x v)) 
      (eval_expr e2 m) (T.default k t)
@@ -650,23 +650,23 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
 
  Fixpoint ceval_expr (t:T.type) (e:expr t) (m:Mem.t k) : T.interp k t * nat :=
    match e in expr t0 return T.interp k t0 * nat with
-   | Ecte t c => ceval_cexpr c
-   | Evar t v => (m v, S O)
+   | @Ecte t c => ceval_cexpr c
+   | @Evar t v => (m v, S O)
    | Eop op la =>
      let ca := dfold_right (fun t (e:expr t) c => snd (ceval_expr e m) + c)%nat 0%nat la in
      let (r, c) := O.ceval_op op (dmap (T.interp k) (fun t (e:expr t) => eval_expr e m) la) in
      (r, c + ca)%nat
-   | Eexists t x e1 e2 =>
+   | @Eexists t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cexistsb 
       (fun v => ceval_expr e1 (Mem.upd m x v)) 
       l n
-   | Eforall t x e1 e2 =>
+   | @Eforall t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cforallb
       (fun v => ceval_expr e1 (Mem.upd m x v))
       l n
-   | Efind t x e1 e2 =>
+   | @Efind t x e1 e2 =>
      let (l, n) := ceval_expr e2 m in
       cfind_default
       (fun v => ceval_expr e1 (Mem.upd m x v))
@@ -717,8 +717,8 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
   | Dbool => true::false::nil
   | Dnat e => seq 0 (S (eval_expr e m))
   | DZ e1 e2 => Z_support (eval_expr e1 m) (eval_expr e2 m)
-  | Duser t s => US.eval k s
-  | Dprod t1 t2 s1 s2 => list_prod (eval_support s1 m) (eval_support s2 m)
+  | @Duser t s => US.eval k s
+  | @Dprod t1 t2 s1 s2 => list_prod (eval_support s1 m) (eval_support s2 m)
   end.
 
  Fixpoint ceval_support k t (s:support t) (m: Mem.t k) : list (T.interp k t) * nat :=
@@ -729,8 +729,8 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
     let (n1, m1) := ceval_expr e1 m in 
       let (n2, m2) := ceval_expr e2 m in 
         (Z_support n1 n2, plus m1 m2)
-  | Duser t s => US.ceval k s
-  | Dprod t1 t2 s1 s2 => 
+  | @Duser t s => US.ceval k s
+  | @Dprod t1 t2 s1 s2 => 
     let (n1, m1) := ceval_support s1 m in
     let (n2, m2) := ceval_support s2 m in
       (list_prod n1 n2, mult m1 m2)
@@ -765,8 +765,8 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
   | Dbool, Dbool => true
   | Dnat e1, Dnat e2 => eqb e1 e2
   | DZ e1a e1b, DZ e2a e2b => eqb e1a e2a && eqb e1b e2b
-  | Duser t1 u1, Duser t2 u2 => US.eqb u1 u2
-  | Dprod t1_1 t2_1 s1_1 s2_1, Dprod t1_2 t2_2 s1_2 s2_2 => 
+  | @Duser t1 u1, @Duser t2 u2 => US.eqb u1 u2
+  | @Dprod t1_1 t2_1 s1_1 s2_1, @Dprod t1_2 t2_2 s1_2 s2_2 => 
     andb (seqb s1_1 s1_2) (seqb s2_1 s2_2)
   | _, _ => false
   end.
@@ -841,8 +841,8 @@ Module MakeExpr (UT:UTYPE) (T:TYPE UT)
  Fixpoint app_expr (lt:list T.type) (tr:T.type) 
   (args:args lt) : tapp_expr lt tr -> expr tr :=
   match args in dlist _ lt0 return tapp_expr lt0 tr -> expr tr with
-  | dnil => fun e => e
-  | dcons t lt e l => fun op => app_expr tr l (op e)
+  | dnil _ => fun e => e
+  | @dcons _ _ t lt e l => fun op => app_expr tr l (op e)
   end.
 
  Definition get_uop t (e:expr t) : option (sigT (fun op => args (Uop.targs op))) :=

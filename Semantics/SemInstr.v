@@ -139,7 +139,7 @@ Module Type SEM_INSTR (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
  Fixpoint get_arg (t:T.type) (x:Var.var t) (lt1 lt2:list T.type) 
   (lv:var_decl lt1) (la:E.args lt2) {struct lv} : option (E.expr t) :=
   match lv, la with
-  | dcons t1 lt1 y lv, dcons t2 lt2 e_y la =>
+  | @dcons _ _ t1 lt1 y lv, @dcons _ _ t2 lt2 e_y la =>
    match get_arg x lv la with
    | Some r => Some r
    | None =>
@@ -613,7 +613,7 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
  Fixpoint init_local_mem (k:nat) (lt1 lt2:list T.type) (lp:var_decl lt1) 
   (lv:dlist (T.interp k) lt2) (m:Mem.t k)  {struct lp} : Mem.t k :=
   match lp, lv with
-  | dcons tx tl1 x lp', dcons tv lt2 v lv =>
+  | @dcons _ _ tx tl1 x lp', @dcons _ _ tv lt2 v lv =>
     let m' := 
      match T.eq_dec tx tv with
      | left Heq =>
@@ -630,7 +630,7 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
   (lv:dlist (fun t => T.interp k t * nat)%type lt2) (m:Mem.t k) (n:nat)
   {struct lp} : Mem.t k * nat :=
   match lp, lv with
-  | dcons tx _ x lp', dcons tv _ vn lv' =>
+  | @dcons _ _ tx _ x lp', @dcons _ _ tv _ vn lv' =>
     let m' := 
      match T.eq_dec tx tv with
      | left Heq =>
@@ -807,7 +807,7 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
  Fixpoint get_arg (t:T.type) (x:Var.var t) (lt1 lt2:list T.type) 
   (lv:var_decl lt1) (la:E.args lt2) {struct lv} : option (E.expr t) :=
   match lv, la with
-  | dcons t1 lt1 y lv, dcons t2 lt2 e_y la =>
+  | @dcons _ _ t1 lt1 y lv, @dcons _ _ t2 lt2 e_y la =>
    match get_arg x lv la with
    | Some r => Some r
    | None =>
@@ -993,10 +993,10 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
   Definition base_step i (mn:Mem.t k * nat) : Distr (Mem.t k * nat) :=
    let (m, n) := mn in
     match i with
-    | I.Assign t x e => 
+    | @I.Assign t x e => 
       let vn := @E.ceval_expr k t e m in
        Munit (Mem.upd m x (fst vn), n + (snd vn))%nat
-    | I.Random t x d =>
+    | @I.Random t x d =>
       let sn := @E.ceval_support k t d m in
       Mlet (sum_support (T.default k t) (fst sn))
        (fun v => Munit (Mem.upd m x v, (n+snd sn)%nat))
@@ -1106,7 +1106,7 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
         (fun mn => Munit (MkState c (fst mn) s.(st_stack),  snd mn))
       | I.Cond e c1 c2 => ceval_test e (c1++c) (c2++c) s n
       | I.While e c1 => ceval_test e (c1++ i::c) c s n 
-      | I.Call t d p a =>
+      | @I.Call t d p a =>
         let mn := cinit_mem E p a s.(st_mem) in
        Munit (MkState 
         (proc_body E p)
@@ -1204,8 +1204,6 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
     mu (Mlet (step s) (fun s' => step_trans s' n )) f.
    Proof.
     induction n; intros; simpl; trivial.
-    apply step_stable_eq; trivial.
-    simpl; apply ford_eq_intro; trivial.
     refine (IHn _ _).
    Qed.
 
@@ -1263,7 +1261,6 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
    Proof with trivial.
     induction n; intros; simpl.
     apply step_stable_eq ...
-    simpl; apply ford_eq_intro...
     simpl in IHn; rewrite IHn...
    Qed.
    
@@ -2509,16 +2506,12 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
    Proof.
     simpl; unfold wi_n'.
     induction n; simpl; intros.
-    unfold drestr; eapply lift_stable_eq.
+    unfold drestr; apply lift_stable_eq.
     trivial.
     apply Mlet_eq_compat.
     symmetry; apply deno_cond.
-    trivial.
-    apply Mlet_eq_compat.
-    symmetry; apply deno_cond.
-    trivial.
    
-    unfold negP; rewrite <- (He H).
+    unfold negP. rewrite (He H).
     case_eq (E.eval_expr e1 m1); intros.
     repeat rewrite deno_nil, Mlet_unit.
     rewrite <- (He H), H0; simpl.

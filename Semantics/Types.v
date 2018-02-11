@@ -14,7 +14,6 @@ Require Export BaseDef.
 Require Export Dlist.
 Require Export CCMisc.
 
-
 Open Scope nat_scope.
 
 (** Polynomials *)
@@ -277,17 +276,28 @@ Proof.
 Qed.
 
 Lemma log_sup_inf_monotonic :forall p q, 
- (p ?= q)%positive Eq = Lt ->
+ (p ?= q)%positive = Lt ->
  S (log_inf p) <= log_sup q.
 Proof.
  induction p; destruct q; simpl; intros H; try discriminate H; auto with arith.
- apply le_n_S; apply le_n_S; apply log_inf_monotonic; unfold Ple; rewrite H; intro; discriminate.
- apply le_n_S; apply IHp.
- rewrite Pcompare_eq_Lt; trivial.
- apply le_n_S; apply le_n_S; apply log_inf_monotonic; unfold Ple.
- apply Pcompare_Lt_Lt in H; destruct H.
- rewrite H; intro; discriminate.
- rewrite H, Pcompare_refl; intro; discriminate.
+ - apply le_n_S.
+   apply le_n_S.
+   apply log_inf_monotonic.
+   rewrite Pos.compare_xI_xI in H.
+   setoid_rewrite <- Pos.compare_le_iff.
+   rewrite H. trivial. intros contra. discriminate contra.
+ - apply le_n_S; apply IHp.
+   rewrite Pos.compare_xI_xO in H.
+   case_eq (p ?= q)%positive; intros Hpq; rewrite Hpq in H; simpl in H.
+   + discriminate H.
+   + reflexivity.
+   + discriminate H.
+ - rewrite Pos.compare_xO_xI in H.
+   apply le_n_S; apply le_n_S; apply log_inf_monotonic; unfold Ple.
+   case_eq (p ?= q)%positive; intros Hpq; rewrite Hpq in H; simpl in H.
+   + intros contra; discriminate contra.
+   + intros contra; discriminate contra.
+   + discriminate H.
 Qed.
 
 Lemma log_inf_le_log_sup : forall p, log_inf p <= log_sup p.
@@ -300,23 +310,42 @@ Proof.
  induction p; intros; simpl; auto with arith.
 Qed.
 
+Ltac simpl_pos_compare :=
+  match goal with
+  | [ H : context[(?p~1 ?= ?q~0)%positive] |- _ ] => rewrite Pos.compare_xI_xO in H
+  | [ H : context[(?p~1 ?= ?q~1)%positive] |- _ ] => rewrite Pos.compare_xI_xI in H
+  | [ H : context[(?p~0 ?= ?q~0)%positive] |- _ ] => rewrite Pos.compare_xO_xO in H
+  | [ H : context[(?p~0 ?= ?q~1)%positive] |- _ ] => rewrite Pos.compare_xO_xI in H
+  end.
+                                                                         
 Lemma log_sup_monotonic : forall (p q:positive), (p <= q)%positive ->
  log_sup p <= log_sup q.
 Proof.
  unfold Ple; induction p; destruct q; simpl; intros; 
   auto using le_n_S, log_inf_monotonic with arith.
  apply le_n_S.
- case_eq ((p ?= q)%positive Gt); intros Heq; rewrite Heq in H.
- destruct (Pcompare_not_Eq p q).
- elim (H0 Heq).
- rewrite <- Pcompare_eq_Lt in Heq.
- apply log_sup_inf_monotonic; trivial.
- elim H; trivial.
- elim H; trivial.
- apply le_n_S.
- apply le_trans with (2:= log_sup_le_Slog_inf q); auto with arith.
- apply IHp; intro; apply H; rewrite <- Pcompare_eq_Gt; trivial.
- elim H; trivial.
+ - simpl_pos_compare.
+   case_eq ((p ?= q)%positive); intros Heq; rewrite Heq in H.
+   simpl in H. exfalso. apply H. reflexivity.
+   apply log_sup_inf_monotonic; auto.
+   simpl in H. exfalso. apply H. reflexivity.
+ - unfold Pos.compare in H.
+   unfold Pos.compare_cont in H.
+   exfalso. apply H. reflexivity.
+ - simpl_pos_compare.
+   apply le_n_S.
+   case_eq ((p ?= q)%positive); intros Heq; rewrite Heq in H.
+   + Search ((_ ?= _)%positive = Eq).
+     apply Pos.compare_eq in Heq; subst.
+     Search (log_sup _ <= S (log_inf _)).
+     apply log_sup_le_Slog_inf.
+   + eapply le_trans. apply IHp; rewrite Heq. intros contra; discriminate contra.
+     Search log_sup.
+     apply log_sup_le_Slog_inf.
+   + simpl in H. exfalso. apply H. reflexivity.
+ - unfold Pos.compare in H.
+   unfold Pos.compare_cont in H.
+   exfalso. apply H. reflexivity.
 Qed.
 
 Definition size_nat (n:nat) : nat := 
@@ -325,12 +354,22 @@ Definition size_nat (n:nat) : nat :=
  | _ => log_sup (P_of_succ_nat n)
  end.
 
+
+Lemma ZL3 :
+ forall n:nat, Psucc (P_of_succ_nat (n + n)) = xO (P_of_succ_nat n).
+Proof.
+intro x; induction x as [| n H];
+ [ simpl in |- *; auto with arith | simpl in |- *; rewrite plus_comm; simpl in |- *; rewrite H; rewrite xO_succ_permute; auto with arith ].
+Qed.
+
 Lemma size_nat_double : forall n, 
  0 < n -> size_nat (2 * n) = S (size_nat n).
 Proof.
  intros n Hn.
  destruct n; simpl; auto with arith.
  clear; rewrite plus_0_r, <- plus_n_Sm; simpl.
+ Search Pos.of_succ_nat.
+ Locate Pos.
  rewrite ZL3.
  induction (P_of_succ_nat n); simpl.
  apply eq_S; rewrite <- IHp; trivial.
@@ -396,6 +435,9 @@ Proof.
  elimtype False; omega.
  red; trivial.
  elimtype False; omega.
+ Print "<"%positive.
+ unfold Pos.lt.
+ rewrite Pos.compare_xO_xO.
  refine (IHn _ _); omega.
 Qed.
 
@@ -405,19 +447,33 @@ Proof.
  discriminate.
  discriminate.
  elimtype False; omega.
+ unfold Pos.le.
+ rewrite Pos.compare_xO_xO.
  refine (IHn _ _); omega.
 Qed.
 
 Lemma log_inf_pow : forall n, (Ppow2 (log_inf n) <= n < Ppow2 (S (log_inf n)))%positive.
 Proof.
  induction n.
- destruct IHn; split.
- unfold Ple in *; simpl; intro; apply H.
- apply Pcompare_Lt_Gt; trivial.
- change ((n ?= (Ppow2 (log_inf n~1)))%positive Gt = Lt).
- rewrite <- Pcompare_eq_Lt; exact H0.
- exact IHn.
- unfold Ple, Plt; simpl; split;[discriminate | trivial].
+ - destruct IHn as [IHn1 IHn2]; split.
+   + unfold Ple in *; simpl; intro; apply IHn1.
+     apply Pcompare_Lt_Gt; trivial.
+   + unfold Plt in *; simpl.
+     simpl in IHn2.
+     rewrite Pos.compare_xI_xO.
+     rewrite IHn2. simpl. reflexivity.
+ - destruct IHn as [IHn1 IHn2]; split.
+   + unfold Ple in *; simpl; intros H. apply IHn1.
+     simpl_pos_compare. trivial.
+   + unfold Plt. simpl. rewrite Pos.compare_xO_xO.
+     simpl in IHn2. trivial.
+ - split.
+   + simpl. unfold Ple. Search (?x ?= ?x)%positive.
+     rewrite Pos.compare_refl.
+     intros contra; discriminate contra.
+   + simpl. unfold Plt.
+     unfold Pos.compare.
+     simpl. reflexivity.
 Qed.
 
 Lemma log_sup_inf : forall p, log_sup p = log_inf p \/ log_sup p = S (log_inf p).
@@ -640,7 +696,7 @@ End EQLIST.
 (** * User-defined types *)
 Module Type UTYPE.
 
- Parameter t : Type. 
+ Parameter t : Set. 
  Parameter eqb : t -> t -> bool. 
  Parameter eqb_spec : forall x y, if eqb x y then x = y else x <> y.
 
@@ -726,7 +782,7 @@ End EmptyType.
 (** * Types *)
 Module Type TYPE (UT:UTYPE).
 
- Inductive type : Type :=
+ Inductive type : Set :=
  | User (ut:UT.t)
  | Unit  
  | Nat
@@ -775,16 +831,16 @@ Module Type TYPE (UT:UTYPE).
   Fixpoint app_op (dom:list type) (codom:type) (op:type_op dom codom)
    (args:dlist interp dom) {struct args} : interp codom :=
    match args in (dlist _ dom0) return type_op dom0 codom -> interp codom with
-   | dnil => fun (op:interp codom) => op
-   | dcons t1 dom v args =>
+   | dnil _ => fun (op:interp codom) => op
+   | @dcons _ _ t1 dom v args =>
      fun (op:type_op (t1::dom) codom) => app_op codom (op v) args
    end op.
 
   Fixpoint capp_op (dom:list type) (codom:type) (op:ctype_op dom codom)
    (args:dlist interp dom) {struct args} : interp codom * nat :=
    match args in (dlist _ dom0) return ctype_op dom0 codom -> interp codom * nat with
-   | dnil => fun (op:interp codom * nat) => op
-   | dcons t1 dom v args =>
+   | dnil _ => fun (op:interp codom * nat) => op
+   | @dcons _ _ t1 dom v args =>
      fun (op:ctype_op (t1::dom) codom) => capp_op codom (op v) args
    end op.
 
@@ -1040,16 +1096,16 @@ Module MakeType (UT:UTYPE) <: TYPE UT.
   Fixpoint app_op (dom:list type) (codom:type) (op:type_op dom codom)
    (args:dlist interp dom) {struct args} : interp codom :=
    match args in (dlist _ dom0) return type_op dom0 codom -> interp codom with
-   | dnil => fun (op:interp codom) => op
-   | dcons t1 dom v args =>
+   | dnil _ => fun (op:interp codom) => op
+   | @dcons _ _ t1 dom v args =>
      fun (op:type_op (t1::dom) codom) => app_op codom (op v) args
    end op.
 
   Fixpoint capp_op (dom:list type) (codom:type) (op:ctype_op dom codom)
    (args:dlist interp dom) {struct args} : interp codom * nat :=
    match args in (dlist _ dom0) return ctype_op dom0 codom -> interp codom * nat with
-   | dnil => fun (op:interp codom * nat) => op
-   | dcons t1 dom v args =>
+   | dnil _ => fun (op:interp codom * nat) => op
+   | @dcons _ _ t1 dom v args =>
      fun (op:ctype_op (t1::dom) codom) => capp_op codom (op v) args
    end op.
 

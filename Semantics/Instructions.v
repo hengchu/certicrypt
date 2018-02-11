@@ -182,9 +182,9 @@ Module MakeInstr (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
 
  Definition bi_eqb (x y:baseInstr) : bool :=
   match x, y with
-  | Assign t1 v1 e1, Assign t2 v2 e2 =>
+  | @Assign t1 v1 e1, @Assign t2 v2 e2 =>
     if Var.veqb v1 v2 then E.eqb e1 e2 else false
-  | Random t1 v1 s1, Random t2 v2 s2 =>
+  | @Random t1 v1 s1, @Random t2 v2 s2 =>
     if Var.veqb v1 v2 then E.seqb s1 s2 else false
   | _, _ => false
   end.
@@ -220,7 +220,7 @@ Module MakeInstr (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
     else false
   | While e c, While e' c' => 
     if E.eqb e e' then eqb_list eqb c c' else false
-  | Call t x f a, Call t' x' f' a' => 
+  | @Call t x f a, @Call t' x' f' a' => 
     if Var.veqb x x' then 
      if Proc.eqb f f' then E.args_eqb a a' 
      else false

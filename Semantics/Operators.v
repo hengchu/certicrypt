@@ -16,7 +16,7 @@ Require Export Types.
 (** * User-defined operators *)
 Module Type UOP (UT:UTYPE) (T:TYPE UT).
   
- Parameter t : Type.
+ Parameter t : Set.
 
  Parameter eqb : t -> t -> bool.
 
