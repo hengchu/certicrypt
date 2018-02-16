@@ -2504,29 +2504,47 @@ Module Make (UT:UTYPE) (T:TYPE UT) (Var:VAR UT T) (Proc:PROC UT T)
     (unroll_while_sem E1 e1 c1 m1 n) 
     (unroll_while_sem E2 e2 c2 m2 n).
    Proof.
-    simpl; unfold wi_n'.
+    simpl; unfold wi_n'. 
     induction n; simpl; intros.
-    unfold drestr; apply lift_stable_eq.
-    trivial.
-    apply Mlet_eq_compat.
-    symmetry; apply deno_cond.
-   
-    unfold negP. rewrite (He H).
-    case_eq (E.eval_expr e1 m1); intros.
-    repeat rewrite deno_nil, Mlet_unit.
-    rewrite <- (He H), H0; simpl.
-    apply distr0_lift.
-    repeat rewrite deno_nil, Mlet_unit.
-    rewrite <- (He H), H0; simpl.
-    apply lift_unit; auto.
-    case_eq (E.eval_expr e1 m1); intros.
-    unfold drestr.
-    rewrite deno_cond, deno_cond, <- (He H), H0, deno_app, deno_app, Mcomp, Mcomp.
-    apply lift_Mlet with R; auto.
-    unfold drestr.
-    rewrite deno_cond, deno_cond, <- (He H), H0, deno_nil, deno_nil, Mlet_unit, Mlet_unit.
-    unfold negP; rewrite <- (He H), H0.
-    simpl; apply lift_unit; auto.
+    - unfold drestr.
+      case_eq (E.eval_expr e1 m1); intros Heq_e1.
+      + rewrite 2 deno_cond.
+        unfold negP.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        rewrite 2 deno_nil.
+        rewrite 2 Mlet_unit.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        apply distr0_lift.
+      + rewrite 2 deno_cond.
+        unfold negP.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        rewrite 2 deno_nil.
+        rewrite 2 Mlet_unit.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        apply lift_unit.
+        split; auto.
+    - unfold negP; unfold drestr.
+      case_eq (E.eval_expr e1 m1); intros Heq_e1.
+      + rewrite 2 deno_cond.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        rewrite 2 deno_app.
+        rewrite 2 Mcomp.
+        apply lift_Mlet with R; auto.
+      + rewrite 2 deno_cond.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        rewrite 2 deno_nil.
+        rewrite 2 Mlet_unit.
+        rewrite <- (He H).
+        rewrite Heq_e1.
+        simpl.
+        apply lift_unit.
+        split; auto.
    Qed.
 
    Lemma while_indR : exists dw:Mem.t k -> Mem.t k -> Distr (Mem.t k * Mem.t k),
